@@ -1,0 +1,163 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# -*- mode: python; -*-
+"""
+Script that parses our bibtex file and downloads the corresponding pdfs
+(if they are not available on disk).
+"""
+
+from __future__ import print_function, with_statement, unicode_literals
+from bibtexparser.bparser import BibTexParser
+from bibtexparser.customization import convert_to_unicode
+import os
+import sys
+import re
+import io       # as suggested by http://stackoverflow.com/a/25050323
+
+exec(open('.bibrc.py').read())  # Load config variables
+
+def download(url, path, msg=sys.stderr, chunk_size=1024):
+    """Download url to path (similar to curl or wget)."""
+    dirname = os.path.dirname(path)
+    if not os.path.exists(dirname): os.mkdir(dirname)
+    print("wget -O %s '%s'" % (path, url), file=msg)
+    try:
+        import pycurl
+        def progress(total, finished, ut, ud):
+            width = 60
+            d = int(width*finished / float(total+1))
+            dots = "." * d + " " * (width - d)
+            line = dots + "% 4.1f %%  " % (100* finished / float(total+1))
+            msg.write(line + "\r")
+
+        c =  pycurl.Curl()
+        with open(path, 'wb') as output:
+            c.setopt(c.URL, url)
+            c.setopt(c.NOPROGRESS, 0)
+            c.setopt(c.PROGRESSFUNCTION, progress)
+            c.setopt(pycurl.FOLLOWLOCATION, True)
+            c.setopt(pycurl.COOKIEFILE, 'does not exist')
+            c.setopt(pycurl.WRITEDATA, output)
+            c.setopt(pycurl.SSL_VERIFYPEER, 0)
+            c.perform()
+        c.close()
+        print("", file=msg)
+    except ImportError:
+        import requests
+        r = requests.get(url)
+        with open(path, 'wb') as file:
+            for buf in r.iter_content(chunk_size):
+                if buf: file.write(buf)
+
+def bibget(bibpath=BIBFILE, pdf_dir=PDF_DIR):
+    """Fetch missing PDFs"""
+    with io.open(bibpath, 'r', encoding='utf-8') as bibfile:
+        bp = BibTexParser(bibfile.read(), customization=convert_to_unicode)
+        for entry in bp.get_entry_list():
+            try:
+                pdfout = entry['ID'].replace(':', '_') + '.pdf'
+                out_dir = pdf_dir
+                if 'dir' in entry:
+                    out_dir = out_dir + entry['dir'].replace('/', '') + '/'
+                print('%-*s' % (KEYWIDTH, pdfout), end='...')
+                sys.stdout.flush()
+                pdfout = out_dir + pdfout
+                if os.path.exists(pdfout):
+                    print('[exists]')
+                else:
+                    url = None
+                    if 'pdf' in entry:
+                        url = entry['pdf']
+                    elif 'link' in entry and entry['link'].endswith('.pdf'):
+                        url = entry['link']
+                    elif '_pdf' in entry:
+                        print('[ignore]')
+                    elif entry['ENTRYTYPE'].lower() == "book":
+                        print('[.book.]')
+                    else:
+                        print('[NO URL]')
+
+                    if url != None:
+                        print('[download]')
+                        download(url, pdfout)
+            except KeyError as e:
+                print("entry.keys = %s" % str(entry.keys()))
+                raise
+
+def git_commit(pdf_dir=PDF_DIR):
+    """Commit last PDFs"""
+    old_dir = os.getcwd()
+    os.chdir(pdf_dir)
+    for line in os.popen("git st -s").readlines():
+        line = line.split(" ")
+        if line[0] == '??':
+            os.system("git add %s" % line[1])
+    pdfs = [l.split()[1] for l in os.popen("git st -s").readlines()
+            if l.split()[0] == 'A' ]
+    pdfs = "\n".join(pdfs)
+    os.system("git ci -am '%s'" % pdfs)
+    os.chdir(old_dir)
+    os.system("git ci bibliography.bib literatur -m '%s'" % pdfs)
+    os.chdir(pdf_dir)
+    os.system("git push")
+
+def bib_mv_dir(old, new, bibpath=BIBFILE):
+    """Rename dir of bibitem given by key in bibpath"""
+    key = re.sub('\./.+/', '', old)
+    key = re.sub('\.pdf$', '', key).replace('_', ':')
+    old = re.sub('\./(.+)/.+', '\\1', old)
+    new = re.sub('\./(.+)/?', '\\1', new).replace('/', '')
+    print("replacing dir in %s from '%s' to '%s' " % (key, old, new))
+    with io.open(bibpath, 'r', encoding='utf-8') as bibfile:
+        bib = bibfile.read()
+        new = re.sub('./(.+)/?', '\1', new)
+        def repl(m):
+            if m.group(2) != old:
+                raise RuntimeError('found dir "%s" is not what was expected "%s"' % (m.group(2)[:200], old))
+            return m.group(1) + "{" + new + "}"
+
+        bib, n = re.subn('(@.+?\{' + key + ',.+?dir\s+?=\s+?)\{(.+?)\}',
+                         repl, bib, count=1, flags=re.M|re.DOTALL)
+        if n < 1: raise RuntimeError('key "%s" not found' % key)
+    with io.open(bibpath, 'w', encoding='utf-8') as bibfile:
+        bibfile.write(bib)
+
+def move(old, new, pdf_dir=PDF_DIR):
+    """Move paper from to directory 'to'"""
+    strip = lambda s: re.sub('.*literatur/', './', s)
+    old, new = strip(old), strip(new)
+    try:
+        old_dir = os.getcwd()
+        os.chdir(pdf_dir)
+        if os.popen("git st -s").read() != '':
+            raise RuntimeError('PDF dir "%s" not clean' % pdf_dir)
+        if not os.path.exists(new):
+            os.mkdir(new)
+        cmd = "git mv %s %s" % (old, new)
+        print(cmd)
+        os.system(cmd)
+        os.system("git ci -m 'Renamed dir'")
+    finally:
+        os.chdir(old_dir)
+
+    bib_mv_dir(old, new)
+    os.system("git ci bibliography.bib literatur -m 'Renamed literatur dir'")
+
+    try:
+        os.chdir(pdf_dir)
+        os.system("git push")
+    finally:
+        os.chdir(old_dir)
+
+
+if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        if sys.argv[1] == 'ci':
+            git_commit()
+        elif sys.argv[1] == 'mv':
+            if len(sys.argv) == 4:
+                move(old=sys.argv[2], new=sys.argv[3])
+            else:
+                print("Wrong number of arguments for moving directory", file=sys.stderr)
+    else:
+        bibget(BIBFILE)
