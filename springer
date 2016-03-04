@@ -23,5 +23,6 @@ entry = bp.get_entry_list()[0]
 
 entry.pop("abstract", None)
 entry.pop("url", None)
+entry["pdf"] = pdfurl
 
 print(entry)
