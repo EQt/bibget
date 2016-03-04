@@ -17,9 +17,9 @@ except ImportError:
     import os
     DEVNULL = open(os.devnull, 'wb')
 try:
-    from urllib.parse import urlencode, urlparse  # py3k
+    from urllib.parse import urlencode, unquote  # py3k
 except ImportError:
-    from urllib import urlencode, urlparse
+    from urllib import urlencode, unquote
 
 def tidy_html(html):
     """
