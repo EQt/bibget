@@ -17,7 +17,7 @@ except ImportError:
     import os
     DEVNULL = open(os.devnull, 'wb')
 try:
-    from urllib3.request import urlencode  # py3k
+    from urllib.parse import urlencode  # py3k
 except ImportError:
     from urllib import urlencode
 
