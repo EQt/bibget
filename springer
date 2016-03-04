@@ -7,6 +7,21 @@ from __future__ import print_function, with_statement
 import sys
 from grab import *
 from bibtexparser.bparser import BibTexParser
+from bibtexparser import dumps
+
+def tex2utf8(s):
+    s = s.replace('{\\\"o}', 'ö')
+    s = s.replace('{\\\"a}', 'ä')
+    s = s.replace('{\\\"u}', 'ü')
+    return s
+
+def utf82e(s):
+    s = s.replace('ö', 'oe')
+    s = s.replace('ä', 'ae')
+    s = s.replace('ü', 'ue')
+    s = s.replace('ß', 'ss')
+    return s
+
 
 if len(sys.argv) <= 1:
     print("Usage: %s <spring-url>" % sys.argv[0], file=sys.stderr)
@@ -24,5 +39,6 @@ entry = bp.get_entry_list()[0]
 entry.pop("abstract", None)
 entry.pop("url", None)
 entry["pdf"] = pdfurl
+entry["author"] = tex2utf8(entry["author"])
 
-print(entry)
+print(dumps(bp))
