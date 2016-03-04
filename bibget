@@ -159,5 +159,10 @@ if __name__ == "__main__":
                 move(old=sys.argv[2], new=sys.argv[3])
             else:
                 print("Wrong number of arguments for moving directory", file=sys.stderr)
+        elif sys.argv[1] == 'springer':
+            bibgetdir = os.path.dirname(os.path.realpath(__file__))
+            sys.path.insert(0, bibgetdir)
+            from springer import bibget
+            print(bibgetdir)
     else:
         bibget(BIBFILE)
