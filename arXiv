@@ -6,6 +6,7 @@ Extract a bibtex entry of an arXiv paper
 from __future__ import print_function, with_statement
 import sys
 from grab import *
+from bibtexparser.bparser import BibTexParser
 
 if len(sys.argv) <= 1:
     print("Usage: %s <arXiv-url>" % sys.argv[0], file=sys.stderr)
@@ -19,3 +20,7 @@ xml = getxml('https://arxiv2bibtex.org/?' + query)
 bib = findx(xml, '//x:textarea[contains(text(), "Author =")]/text()')[0]
 
 print(bib)
+
+bp = BibTexParser(bib)
+entry = bp.get_entry_list()[0]
+
