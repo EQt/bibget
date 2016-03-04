@@ -1,0 +1,21 @@
+#!/usr/bin/env python
+"""
+Extract a bibtex entry of an arXiv paper
+"""
+
+from __future__ import print_function, with_statement
+import sys
+from grab import *
+from bibtexparser.bparser import BibTexParser
+
+if len(sys.argv) <= 1:
+    print("Usage: %s <spring-url>" % sys.argv[0], file=sys.stderr)
+    exit(1)
+
+xml = getxml(sys.argv[1])
+
+pdfurl  = findx(xml, "//x:meta[@name = 'citation_pdf_url']/@content")[0]
+biburl  = findx(xml, "//x:a[contains(text(), 'BibTeX (.BIB)')]/@href")[0]
+bibtex = readurl(biburl).decode('utf-8')
+
+print(bibtex)
