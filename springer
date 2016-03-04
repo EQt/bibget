@@ -22,6 +22,24 @@ def utf82e(s):
     s = s.replace('ß', 'ss')
     return s
 
+def lastname(name):
+    """Compute the last name of full name n"""
+    p = name.split(",")
+    if len(p) >= 2:
+        return p[0].strip()
+    else:
+        p = name.split(" ")
+        return p[-1].strip()
+
+
+def bibid(entry):
+    authors = entry["author"].split("and")
+    if len(authors) > 3:
+        bid = lastname(authors[0]) + "EtAl"
+    else:
+        bid = "".join(map(lastname, authors))
+    entry['ID'] = utf82e(bid + ":" + str(entry["year"]))
+
 
 if len(sys.argv) <= 1:
     print("Usage: %s <spring-url>" % sys.argv[0], file=sys.stderr)
@@ -40,5 +58,6 @@ entry.pop("abstract", None)
 entry.pop("url", None)
 entry["pdf"] = pdfurl
 entry["author"] = tex2utf8(entry["author"])
+bibid(entry)
 
 print(dumps(bp))
