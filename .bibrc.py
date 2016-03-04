@@ -1,7 +1,7 @@
 import os
 
-BIBFILE  = './bibliography.bib'
-PDF_DIR  = 'literatur/'
+BIBFILE  = '../bibliography.bib'
+PDF_DIR  = '../literatur/'
 KEYWIDTH = 50
 
 # change working directory to main git directory
