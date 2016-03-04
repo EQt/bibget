@@ -1,0 +1,54 @@
+#!/usr/bin/env python
+"""
+Extract a bibtex entry of an arXiv paper
+"""
+
+from urllib.request import urlopen
+import sys
+import re
+from lxml import etree
+from io import StringIO
+import subprocess as sp
+try:
+    from subprocess import DEVNULL  # py3k
+except ImportError:
+    DEVNULL = open(os.devnull, 'wb')
+try:
+    from urllib3.request import urlencode  # py3k
+except ImportError:
+    from urllib import urlencode
+
+def tidy_html(html):
+    """
+    Although there is a lib for it (https://pypi.python.org/pypi/pytidylib),
+    I prefer to call tidy myself.
+    """
+    html = html.replace(b"&nbsp;", b" ")
+    opts = {"stdout": sp.PIPE,
+            "stderr": DEVNULL,
+            "stdin": sp.PIPE}
+    with Popen("tidy -asxhtml -utf8 -q".split(), **opts) as proc:
+        out, err = proc.communicate(input=html)
+        return out
+
+def getxml(url):
+    html = urlopen(url).readall()
+    xml = tidy_html(html)
+    return etree.parse(BytesIO(xml))
+
+def findx(xml, path):
+    ns = {'x': 'http://www.w3.org/1999/xhtml'}
+    return xml.xpath(path, namespaces=ns)
+
+if len(sys.argv) <= 1:
+    print("Usage: %s <arXiv-url>" % sys.argv[0], file=sys.stderr)
+    exit(1)
+
+xml = getxml(sys.argv[1])
+pdfurl   = findx(xml, "//x:meta[@name = 'citation_pdf_url']/@content")[0]
+arXiv_id = findx(xml, "//x:meta[@name = 'citation_arxiv_id']/@content")[0]
+query = urlencode({'format': 'bibtex', 'q': arXiv_id})
+xml = getxml('https://arxiv2bibtex.org/?' + query)
+bib = findx(xml, '//x:textarea[contains(text(), "Author =")]/text()')[0]
+
+print(bib)
