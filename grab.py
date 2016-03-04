@@ -5,11 +5,11 @@ import subprocess as sp
 try:
     from urllib.request import urlopen
     def readurl(url):
-        return urlopen(url).readall()
+        return urlopen(unquote(url)).readall()
 except ImportError:
     from urllib2 import urlopen
     def readurl(url):
-        return urlopen(url).read()
+        return urlopen(unquote(url)).read()
 
 try:
     from subprocess import DEVNULL  # py3k
@@ -30,7 +30,7 @@ def tidy_html(html):
     opts = {"stdout": sp.PIPE,
             "stderr": DEVNULL,
             "stdin": sp.PIPE}
-    proc = sp.Popen("tidy -asxhtml -utf8 -q".split(), **opts)
+    proc = sp.Popen("tidy -asxhtml -utf8 -q --force-output 1".split(), **opts)
     out, err = proc.communicate(input=html)
     return out
 
