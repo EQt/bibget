@@ -16,6 +16,12 @@ xml = getxml(sys.argv[1])
 
 pdfurl  = findx(xml, "//x:meta[@name = 'citation_pdf_url']/@content")[0]
 biburl  = findx(xml, "//x:a[contains(text(), 'BibTeX (.BIB)')]/@href")[0]
-bibtex = readurl(biburl).decode('utf-8')
+bibtex = readurl(biburl).decode('utf-8').replace("﻿", "")
 
-print(bibtex)
+bp = BibTexParser(bibtex)
+entry = bp.get_entry_list()[0]
+
+entry.pop("abstract", None)
+entry.pop("url", None)
+
+print(entry)
