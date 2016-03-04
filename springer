@@ -59,26 +59,32 @@ def dumps(entry):
     labels = set(labels) - set(['title', 'author'])
     for l in labels:
         s = s + form(l)
-    return s
+    return s + "\n}\n\n"
 
 
-if len(sys.argv) <= 1:
-    print("Usage: %s <spring-url>" % sys.argv[0], file=sys.stderr)
-    exit(1)
+def bibget(url):
+    xml = getxml(url)
 
-xml = getxml(sys.argv[1])
+    pdfurl  = findx(xml, "//x:meta[@name = 'citation_pdf_url']/@content")[0]
+    biburl  = findx(xml, "//x:a[contains(text(), 'BibTeX (.BIB)')]/@href")[0]
+    bibtex = readurl(biburl).decode('utf-8').replace("﻿", "")
 
-pdfurl  = findx(xml, "//x:meta[@name = 'citation_pdf_url']/@content")[0]
-biburl  = findx(xml, "//x:a[contains(text(), 'BibTeX (.BIB)')]/@href")[0]
-bibtex = readurl(biburl).decode('utf-8').replace("﻿", "")
+    bp = BibTexParser(bibtex)
+    entry = bp.get_entry_list()[0]
 
-bp = BibTexParser(bibtex)
-entry = bp.get_entry_list()[0]
+    entry.pop("abstract", None)
+    entry.pop("url", None)
+    entry["pdf"] = pdfurl
+    entry["author"] = tex2utf8(entry["author"])
+    bibid(entry)
 
-entry.pop("abstract", None)
-entry.pop("url", None)
-entry["pdf"] = pdfurl
-entry["author"] = tex2utf8(entry["author"])
-bibid(entry)
+    return dumps(bp)
 
-print(dumps(bp))
+
+
+if __name__ == "__main__":
+    if len(sys.argv) <= 1:
+        print("Usage: %s <spring-url>" % sys.argv[0], file=sys.stderr)
+        exit(1)
+
+    print(bibget(sys.argv[1]))
