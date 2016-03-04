@@ -62,7 +62,7 @@ def dumps(entry):
     return s + "\n}\n\n"
 
 
-def bibget(url):
+def bibentry(url):
     xml = getxml(url)
 
     pdfurl  = findx(xml, "//x:meta[@name = 'citation_pdf_url']/@content")[0]

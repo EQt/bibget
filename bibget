@@ -162,7 +162,12 @@ if __name__ == "__main__":
         elif sys.argv[1] == 'springer':
             bibgetdir = os.path.dirname(os.path.realpath(__file__))
             sys.path.insert(0, bibgetdir)
-            from springer import bibget
-            print(bibgetdir)
+            from springer import bibentry
+            entry = bibentry(sys.argv[2])
+            print(os.getcwd())
+            bibf = open(BIBFILE).read()
+            with open(BIBFILE, "w") as b:
+                b.write(entry)
+                b.write(bibf)
     else:
         bibget(BIBFILE)
