@@ -26,13 +26,13 @@ def tidy_html(html):
     Although there is a lib for it (https://pypi.python.org/pypi/pytidylib),
     I prefer to call tidy myself.
     """
-    html = html.replace(b"&nbsp;", b" ")
     opts = {"stdout": sp.PIPE,
             "stderr": DEVNULL,
             "stdin": sp.PIPE}
-    proc = sp.Popen("tidy -asxhtml -utf8 -q --force-output 1".split(), **opts)
+    proc = sp.Popen("tidy --force-output 1 -asxhtml -utf8 -q".split(), **opts)
     out, err = proc.communicate(input=html)
-    return out
+    return out.replace(b"&nbsp;", b" ")
+
 
 def getxml(url):
     html = readurl(url)
