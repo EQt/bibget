@@ -1,5 +1,5 @@
 from lxml import etree
-from io import StringIO
+from io import BytesIO
 import subprocess as sp
 
 try:
@@ -30,9 +30,9 @@ def tidy_html(html):
     opts = {"stdout": sp.PIPE,
             "stderr": DEVNULL,
             "stdin": sp.PIPE}
-    with sp.Popen("tidy -asxhtml -utf8 -q".split(), **opts) as proc:
-        out, err = proc.communicate(input=html)
-        return out
+    proc = sp.Popen("tidy -asxhtml -utf8 -q".split(), **opts)
+    out, err = proc.communicate(input=html)
+    return out
 
 def getxml(url):
     html = readurl(url)
