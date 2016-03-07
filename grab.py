@@ -5,7 +5,8 @@ import os
 import re
 import sys
 import json
-from bib import pdfloc, dumps, entry_exists
+from bib import pdfloc, dumps, entry_exists, prepend
+import shutil
 
 try:
     from urllib.request import urlopen
@@ -92,12 +93,15 @@ def import_pdf(fname, PDF_DIR, BIBFILE, open_browser=False):
             from webbrowser import open_new_tab
             open_new_tab(url)
         entry = fetch_entry(url)
-        print(BIBFILE)
         if entry_exists(BIBFILE, entry):
-            print("Already have it")
+            print("Already have ID", file=sys.stderr)
         else:
-            pdfout = pdfloc(entry, PDF_DIR)
+            prepend(BIBFILE, dumps(entry))
+        pdfout = pdfloc(entry, PDF_DIR)
+        if not os.path.isfile(pdfout):
+            shutil.copy(fname, pdfout)
             print(pdfout)
+
     except sp.CalledProcessError:
         print(os.getcwd())
         pass

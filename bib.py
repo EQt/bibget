@@ -2,6 +2,14 @@
 Some utility functions...
 """
 from bibtexparser.bparser import BibTexParser
+from bibtexparser.customization import convert_to_unicode
+import io
+
+
+def bibparse(bibpath):
+    with io.open(bibpath, 'r', encoding='utf-8') as bibfile:
+        return BibTexParser(bibfile.read(), customization=convert_to_unicode)
+
 
 def tex2utf8(s):
     repls = [('{\\\"o}', 'ö'),
@@ -73,7 +81,9 @@ def dumps(entry):
 
 
 def entry_exists(fname, entry):
-    entry_id = BibTexParser(entry).get_entry_list()[0]['ID']
+    if not isinstance(entry, dict):
+        entry = BibTexParser(entry).get_entry_list()[0]
+    entry_id = entry['ID']
     entries = bibparse(fname).get_entry_dict()
     return entry_id in entries.keys()
 

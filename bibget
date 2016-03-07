@@ -56,11 +56,6 @@ def download(url, path, msg=sys.stderr, chunk_size=1024):
                 if buf: file.write(buf)
 
 
-def bibparse(bibpath):
-    with io.open(bibpath, 'r', encoding='utf-8') as bibfile:
-        return BibTexParser(bibfile.read(), customization=convert_to_unicode)
-
-
 def bibget(bibpath=BIBFILE, pdf_dir=PDF_DIR):
     """Fetch missing PDFs"""
     bp = bibparse(bibpath)
@@ -185,7 +180,7 @@ if __name__ == "__main__":
         else:
             print("WARNING: ignoring arguments " + ",".join(sys.argv[1:]),
                   file=sys.stderr)
-            
+
     else:
         os.chdir(main_dir)
         bibget(BIBFILE)
