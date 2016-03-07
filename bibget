@@ -16,6 +16,9 @@ import io       # as suggested by http://stackoverflow.com/a/25050323
 
 # Load config variables
 exec(open(os.path.join(os.path.dirname(__file__), '.bibrc.py')).read())
+bibgetdir = os.path.dirname(os.path.realpath(__file__))
+sys.path.insert(0, bibgetdir)
+
 
 def download(url, path, msg=sys.stderr, chunk_size=1024):
     """Download url to path (similar to curl or wget)."""
@@ -151,11 +154,6 @@ def move(old, new, pdf_dir=PDF_DIR):
         os.chdir(old_dir)
 
 
-def append_import():
-    bibgetdir = os.path.dirname(os.path.realpath(__file__))
-    sys.path.insert(0, bibgetdir)
-
-
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         if sys.argv[1] == 'ci':
@@ -166,7 +164,6 @@ if __name__ == "__main__":
             else:
                 print("Wrong number of arguments for moving directory", file=sys.stderr)
         elif sys.argv[1] == 'springer':
-            append_import()
             from springer import bibentry
             entry = bibentry(sys.argv[2])
             print(os.getcwd())
