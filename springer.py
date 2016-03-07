@@ -25,7 +25,7 @@ def fetch_entry(url):
     entry.pop("url", None)
     entry["pdf"] = pdfurl
     entry["author"] = tex2utf8(entry["author"])
-    bibid(entry)
+    setid(entry)
     return entry
     
 

@@ -24,7 +24,7 @@ def lastname(name):
         return p[-1].strip()
 
 
-def bibid(entry):
+def setid(entry):
     authors = entry["author"].split("and")
     if len(authors) > 3:
         bid = lastname(authors[0]) + "EtAl"
