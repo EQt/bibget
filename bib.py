@@ -39,7 +39,7 @@ def utf82e(s):
 
 def lastname(name):
     """Compute the last name of full name n"""
-    p = name.split(",")
+    p = name.strip().split(",")
     if len(p) >= 2:
         return p[0].strip()
     else:
@@ -48,7 +48,7 @@ def lastname(name):
 
 
 def setid(entry):
-    authors = entry["author"].split("and")
+    authors = list(map(lambda s: s.strip(), entry["author"].split("and")))
     if len(authors) > 3:
         bid = lastname(authors[0]) + "EtAl"
     else:
