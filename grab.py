@@ -67,7 +67,10 @@ def fetch_entry(url, doi=None):
     else:
         pdfurl = ask('PDF   ')
         url = ask('BIBTEX')
-        bibtex = readurl(url).decode('utf-8')
+        if url == 'local':
+            bibtex = open('local').read()
+        else:
+            bibtex = readurl(url).decode('utf-8')
         entry = create_entry(bibtex, pdfurl)
     if doi is not None:
         entry['doi'] = doi
