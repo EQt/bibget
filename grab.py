@@ -1,6 +1,7 @@
 from lxml import etree
 from io import BytesIO
 import subprocess as sp
+import os
 
 try:
     from urllib.request import urlopen
@@ -46,3 +47,16 @@ def findx(xml, path):
 
 def retrieve(url):
     raise "not implemented, yet..."
+
+
+def import_pdf(fname, open_browser=True):
+    """
+    Run pdfgrep and search for DOI.
+    If one is found, redirect to the publishers website.
+    If open_browser, show the corresponding web page.
+    """
+    try:
+        dois = sp.check_output(['pdfgrep', '-i', 'DOI', fname]).split('\n')
+    except sp.CalledProcessError:
+        print(os.getcwd())
+        pass
