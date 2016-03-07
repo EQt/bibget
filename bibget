@@ -53,6 +53,7 @@ def download(url, path, msg=sys.stderr, chunk_size=1024):
             for buf in r.iter_content(chunk_size):
                 if buf: file.write(buf)
 
+
 def bibparse(bibpath):
     with io.open(bibpath, 'r', encoding='utf-8') as bibfile:
         return BibTexParser(bibfile.read(), customization=convert_to_unicode)
@@ -170,7 +171,6 @@ if __name__ == "__main__":
         elif sys.argv[1] == 'springer':
             from springer import bibentry
             entry = bibentry(sys.argv[2])
-            print(os.getcwd())
             bibf = open(BIBFILE).read()
             with open(BIBFILE, "w") as b:
                 b.write(entry)
