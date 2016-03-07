@@ -78,7 +78,7 @@ def doi2url(doi):
     return info['values'][0]['data']['value']
 
 
-def import_pdf(fname, PDF_DIR, BIBFILE, open_browser=False):
+def import_pdf(fname, PDF_DIR, BIBFILE, open_browser=True):
     """
     Run pdfgrep and search for DOI.
     If one is found, redirect to the publishers website.
