@@ -21,9 +21,9 @@ except ImportError:
     import os
     DEVNULL = open(os.devnull, 'wb')
 try:
-    from urllib.parse import urlencode, unquote  # py3k
+    from urllib.parse import urlencode, unquote, urlparse  # py3k
 except ImportError:
-    from urllib import urlencode, unquote
+    from urllib import urlencode, unquote, urlparse
 
 def tidy_html(html):
     """
@@ -49,7 +49,12 @@ def findx(xml, path):
 
 
 def retrieve(url):
-    raise "not implemented, yet..."
+    import springer
+    urlp = urlparse(url)
+    if urlp.netloc == 'link.springer.com':
+        return springer.bibentry(url)
+    raise RuntimeError("don't know how to handle %s" % url)
+
 
 
 def error(msg):
@@ -71,6 +76,9 @@ def import_pdf(fname, open_browser=True):
         info = readurl("http://doi.org/api/handles/{0}".format(doi)).decode('utf-8')
         info = json.loads(info)
         url = info['values'][0]['data']['value']
+        print("URL : " + url, file=sys.stderr)
+        entry = retrieve(url)
+        print(entry)
     except sp.CalledProcessError:
         print(os.getcwd())
         pass

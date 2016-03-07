@@ -16,8 +16,11 @@ import io       # as suggested by http://stackoverflow.com/a/25050323
 
 # Load config variables
 exec(open(os.path.join(os.path.dirname(__file__), '.bibrc.py')).read())
+print(os.getcwd())
 bibgetdir = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(0, bibgetdir)
+
+from bib import *
 
 
 def download(url, path, msg=sys.stderr, chunk_size=1024):
@@ -178,8 +181,10 @@ def prepend(fname, entry):
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         if sys.argv[1] == 'ci':
+            if len(main_dir) > 0: os.chdir(main_dir)
             git_commit()
         elif sys.argv[1] == 'mv':
+            if len(main_dir) > 0: os.chdir(main_dir)
             if len(sys.argv) == 4:
                 move(old=sys.argv[2], new=sys.argv[3])
             else:
@@ -195,6 +200,9 @@ if __name__ == "__main__":
         elif sys.argv[1].startswith('http'):
             import grab
             grab.retrieve(sys.argv[1])
+        elif sys.argv[1].lower().endswith('.pdf'):
+            import grab
+            grab.import_pdf(sys.argv[1])
         else:
             print("WARNING: ignoring arguments " + ",".join(sys.argv[1:]),
                   file=sys.stderr)

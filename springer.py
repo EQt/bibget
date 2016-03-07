@@ -8,6 +8,7 @@ import sys
 from grab import *
 from bibtexparser.bparser import BibTexParser
 import textwrap
+from grab import getxml
 # from bibtexparser import dumps
 
 def tex2utf8(s):
