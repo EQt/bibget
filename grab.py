@@ -5,7 +5,7 @@ import os
 import re
 import sys
 import json
-from bib import pdfloc, dumps, entry_exists, prepend
+from bib import pdfloc, dumps, entry_exists, prepend, create_entry
 import shutil
 
 try:
@@ -53,12 +53,25 @@ def findx(xml, path):
 def retrieve(url):
     return dumps(fetch_entry(url))
 
-def fetch_entry(url):
+
+def ask(prompt):
+    print('%s: ' % prompt, end=''); sys.stdout.flush()
+    return sys.stdin.readline().strip()
+
+
+def fetch_entry(url, doi=None):
     import springer
     urlp = urlparse(url)
     if urlp.netloc == 'link.springer.com':
-        return springer.fetch_entry(url)
-    raise RuntimeError("don't know how to handle %s" % url)
+        entry = springer.fetch_entry(url)
+    else:
+        pdfurl = ask('PDF   ')
+        url = ask('BIBTEX')
+        bibtex = readurl(url).decode('utf-8')
+        entry = create_entry(bibtex, pdfurl)
+    if doi is not None:
+        entry['doi'] = doi
+    return entry
 
 
 def error(msg):
@@ -85,6 +98,7 @@ def import_pdf(fname, PDF_DIR, BIBFILE, open_browser=True):
     If open_browser, show the corresponding web page.
     """
     try:
+        print("PDF : " + fname, file=sys.stderr)
         doi = find_doi(fname)
         print("DOI : " + doi, file=sys.stderr)
         url = doi2url(doi)
@@ -92,7 +106,7 @@ def import_pdf(fname, PDF_DIR, BIBFILE, open_browser=True):
         if open_browser:
             from webbrowser import open_new_tab
             open_new_tab(url)
-        entry = fetch_entry(url)
+        entry = fetch_entry(url, doi=doi)
         if entry_exists(BIBFILE, entry):
             print("Already have ID", file=sys.stderr)
         else:
