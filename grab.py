@@ -5,6 +5,7 @@ import os
 import re
 import sys
 import json
+from bib import pdfloc, dumps
 
 try:
     from urllib.request import urlopen
@@ -49,19 +50,21 @@ def findx(xml, path):
 
 
 def retrieve(url):
+    return dumps(fetch_entry(url))
+
+def fetch_entry(url):
     import springer
     urlp = urlparse(url)
     if urlp.netloc == 'link.springer.com':
-        return springer.bibentry(url)
+        return springer.fetch_entry(url)
     raise RuntimeError("don't know how to handle %s" % url)
-
 
 
 def error(msg):
     raise RuntimeError(msg)
 
 
-def import_pdf(fname, open_browser=True):
+def import_pdf(fname, PDF_DIR, open_browser=False):
     """
     Run pdfgrep and search for DOI.
     If one is found, redirect to the publishers website.
@@ -77,8 +80,12 @@ def import_pdf(fname, open_browser=True):
         info = json.loads(info)
         url = info['values'][0]['data']['value']
         print("URL : " + url, file=sys.stderr)
-        entry = retrieve(url)
-        print(entry)
+        if open_browser:
+            from webbrowser import open_new_tab
+            open_new_tab(url)
+        entry = fetch_entry(url)
+        pdfout = pdfloc(entry, PDF_DIR)
+        print(pdfout)
     except sp.CalledProcessError:
         print(os.getcwd())
         pass

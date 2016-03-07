@@ -69,3 +69,18 @@ def dumps(entry):
         s = s + form(l)
     return s + "\n}\n\n"
 
+
+def prepend(fname, entry):
+    """
+    Prepend string entry if it does not exist in fname as bibtex entry
+    """
+    entry_id = BibTexParser(entry).get_entry_list()[0]['ID']
+    entries = bibparse(fname).get_entry_dict()
+    if entry_id in entries.keys():
+        print("There already exists an bibtex entry '%s'!" % entry_id,
+              file=sys.stderr)
+        return
+    bibf = open(fname).read()
+    with open(fname, "w") as b:
+        b.write(entry)
+        b.write(bibf)
