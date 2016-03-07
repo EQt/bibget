@@ -1,6 +1,8 @@
 """
 Some utility functions...
 """
+from bibtexparser.bparser import BibTexParser
+
 def tex2utf8(s):
     repls = [('{\\\"o}', 'ö'),
              ('{\\\"a}', 'ä'),
@@ -70,13 +72,17 @@ def dumps(entry):
     return s + "\n}\n\n"
 
 
+def entry_exists(fname, entry):
+    entry_id = BibTexParser(entry).get_entry_list()[0]['ID']
+    entries = bibparse(fname).get_entry_dict()
+    return entry_id in entries.keys()
+
+
 def prepend(fname, entry):
     """
     Prepend string entry if it does not exist in fname as bibtex entry
     """
-    entry_id = BibTexParser(entry).get_entry_list()[0]['ID']
-    entries = bibparse(fname).get_entry_dict()
-    if entry_id in entries.keys():
+    if entry_exists(fname, entry):
         print("There already exists an bibtex entry '%s'!" % entry_id,
               file=sys.stderr)
         return

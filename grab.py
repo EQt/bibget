@@ -5,7 +5,7 @@ import os
 import re
 import sys
 import json
-from bib import pdfloc, dumps
+from bib import pdfloc, dumps, entry_exists
 
 try:
     from urllib.request import urlopen
@@ -64,28 +64,40 @@ def error(msg):
     raise RuntimeError(msg)
 
 
-def import_pdf(fname, PDF_DIR, open_browser=False):
+def find_doi(fname):
+    dois = sp.check_output(['pdfgrep', '-i', 'DOI', fname]).decode('utf-8')
+    DOI_REGEX = ".*doi.+(10\\.\d{4,6}/[^\"'&<% \t\n\r\f\v]+).*"
+    m = re.match(DOI_REGEX, dois, flags=re.I) or error('Could not find DOI')
+    return m.group(1)
+    
+
+def doi2url(doi):
+    info = readurl("http://doi.org/api/handles/{0}".format(doi)).decode('utf-8')
+    info = json.loads(info)
+    return info['values'][0]['data']['value']
+
+
+def import_pdf(fname, PDF_DIR, BIBFILE, open_browser=False):
     """
     Run pdfgrep and search for DOI.
     If one is found, redirect to the publishers website.
     If open_browser, show the corresponding web page.
     """
     try:
-        dois = sp.check_output(['pdfgrep', '-i', 'DOI', fname]).decode('utf-8')
-        DOI_REGEX = ".*doi.+(10\\.\d{4,6}/[^\"'&<% \t\n\r\f\v]+).*"
-        m = re.match(DOI_REGEX, dois, flags=re.I) or error('Could not find DOI')
-        doi = m.group(1)
+        doi = find_doi(fname)
         print("DOI : " + doi, file=sys.stderr)
-        info = readurl("http://doi.org/api/handles/{0}".format(doi)).decode('utf-8')
-        info = json.loads(info)
-        url = info['values'][0]['data']['value']
+        url = doi2url(doi)
         print("URL : " + url, file=sys.stderr)
         if open_browser:
             from webbrowser import open_new_tab
             open_new_tab(url)
         entry = fetch_entry(url)
-        pdfout = pdfloc(entry, PDF_DIR)
-        print(pdfout)
+        print(BIBFILE)
+        if entry_exists(BIBFILE, entry):
+            print("Already have it")
+        else:
+            pdfout = pdfloc(entry, PDF_DIR)
+            print(pdfout)
     except sp.CalledProcessError:
         print(os.getcwd())
         pass

@@ -181,7 +181,7 @@ if __name__ == "__main__":
             grab.retrieve(sys.argv[1])
         elif sys.argv[1].lower().endswith('.pdf'):
             import grab
-            grab.import_pdf(sys.argv[1], main_dir + "/" + PDF_DIR)
+            grab.import_pdf(sys.argv[1], main_dir + "/" + PDF_DIR, main_dir + "/" + BIBFILE)
         else:
             print("WARNING: ignoring arguments " + ",".join(sys.argv[1:]),
                   file=sys.stderr)
