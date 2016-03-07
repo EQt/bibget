@@ -159,6 +159,13 @@ def move(old, new, pdf_dir=PDF_DIR):
         os.chdir(old_dir)
 
 
+def prepend(fname, string):
+    bibf = open(fname).read()
+    with open(fname, "w") as b:
+        b.write(entry)
+        b.write(bibf)
+
+
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         if sys.argv[1] == 'ci':
@@ -171,10 +178,7 @@ if __name__ == "__main__":
         elif sys.argv[1] == 'springer':
             from springer import bibentry
             entry = bibentry(sys.argv[2])
-            bibf = open(BIBFILE).read()
-            with open(BIBFILE, "w") as b:
-                b.write(entry)
-                b.write(bibf)
+            prepend(BIBFILE, entry)
         elif sys.argv[1].lower().startswith('doi:'):
             import doi
             arg1 = sys.argv[1].lower()
