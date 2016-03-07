@@ -87,4 +87,4 @@ if __name__ == "__main__":
         print("Usage: %s <spring-url>" % sys.argv[0], file=sys.stderr)
         exit(1)
 
-    print(bibget(sys.argv[1]))
+    print(bibentry(sys.argv[1]))
