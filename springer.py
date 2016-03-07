@@ -19,7 +19,22 @@ def fetch_entry(url):
     bibtex = readurl(biburl).decode('utf-8').replace("﻿", "")
 
     return create_entry(bibtex, pdfurl)
-    
+
+def fetch_acs(url):
+    import requests
+    s = requests.Session()
+    pdfurl = url.replace('/abs/', '/pdf/')
+    action = 'http://pubs.acs.org/action/downloadCitation'
+    # POST DATA
+    data = {
+        'direct' : 'true',
+        'doi' :  doi,
+        'downloadFileName' : 'achs_ancham84_2622',
+        'format' : 'bibtex',
+        'include' : 'cit',
+        'submit' : 'Download+Citation(s)'
+    }
+
 
 def bibentry(url):
     return dumps(fetch_entry(url))
