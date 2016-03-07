@@ -62,36 +62,36 @@ def bibparse(bibpath):
 def bibget(bibpath=BIBFILE, pdf_dir=PDF_DIR):
     """Fetch missing PDFs"""
     bp = bibparse(bibpath)
-        for entry in bp.get_entry_list():
-            try:
-                pdfout = entry['ID'].replace(':', '_') + '.pdf'
-                out_dir = pdf_dir
-                if 'dir' in entry:
-                    out_dir = out_dir + entry['dir'].replace('/', '') + '/'
-                print('%-*s' % (KEYWIDTH, pdfout), end='...')
-                sys.stdout.flush()
-                pdfout = out_dir + pdfout
-                if os.path.exists(pdfout):
-                    print('[exists]')
+    for entry in bp.get_entry_list():
+        try:
+            pdfout = entry['ID'].replace(':', '_') + '.pdf'
+            out_dir = pdf_dir
+            if 'dir' in entry:
+                out_dir = out_dir + entry['dir'].replace('/', '') + '/'
+            print('%-*s' % (KEYWIDTH, pdfout), end='...')
+            sys.stdout.flush()
+            pdfout = out_dir + pdfout
+            if os.path.exists(pdfout):
+                print('[exists]')
+            else:
+                url = None
+                if 'pdf' in entry:
+                    url = entry['pdf']
+                elif 'link' in entry and entry['link'].endswith('.pdf'):
+                    url = entry['link']
+                elif '_pdf' in entry:
+                    print('[ignore]')
+                elif entry['ENTRYTYPE'].lower() == "book":
+                    print('[.book.]')
                 else:
-                    url = None
-                    if 'pdf' in entry:
-                        url = entry['pdf']
-                    elif 'link' in entry and entry['link'].endswith('.pdf'):
-                        url = entry['link']
-                    elif '_pdf' in entry:
-                        print('[ignore]')
-                    elif entry['ENTRYTYPE'].lower() == "book":
-                        print('[.book.]')
-                    else:
-                        print('[NO URL]')
+                    print('[NO URL]')
 
-                    if url != None:
-                        print('[download]')
-                        download(url, pdfout)
-            except KeyError as e:
-                print("entry.keys = %s" % str(entry.keys()))
-                raise
+                if url != None:
+                    print('[download]')
+                    download(url, pdfout)
+        except KeyError as e:
+            print("entry.keys = %s" % str(entry.keys()))
+            raise
 
 def git_commit(pdf_dir=PDF_DIR):
     """Commit last PDFs"""
@@ -159,7 +159,16 @@ def move(old, new, pdf_dir=PDF_DIR):
         os.chdir(old_dir)
 
 
-def prepend(fname, string):
+def prepend(fname, entry):
+    """
+    Prepend string entry if it does not exist in fname as bibtex entry
+    """
+    entry_id = BibTeXParser(entry).get_entry_list()[0]['ID']
+    entries = bibparse(fname).get_entry_dict()
+    if entry_id in entries.keys():
+        print("There already exists an bibtex entry '%s'!" % entry_id,
+              file=sys.stderr)
+        return
     bibf = open(fname).read()
     with open(fname, "w") as b:
         b.write(entry)
