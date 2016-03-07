@@ -16,7 +16,6 @@ import io       # as suggested by http://stackoverflow.com/a/25050323
 
 # Load config variables
 exec(open(os.path.join(os.path.dirname(__file__), '.bibrc.py')).read())
-print(os.getcwd())
 bibgetdir = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(0, bibgetdir)
 
