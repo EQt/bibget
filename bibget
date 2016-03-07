@@ -208,4 +208,5 @@ if __name__ == "__main__":
                   file=sys.stderr)
             
     else:
+        if len(main_dir) > 0: os.chdir(main_dir)
         bibget(BIBFILE)
