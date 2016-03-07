@@ -2,9 +2,12 @@
 Some utility functions...
 """
 def tex2utf8(s):
-    s = s.replace('{\\\"o}', 'ö')
-    s = s.replace('{\\\"a}', 'ä')
-    s = s.replace('{\\\"u}', 'ü')
+    repls = [('{\\\"o}', 'ö'),
+             ('{\\\"a}', 'ä'),
+             ('{\\\"u}', 'ü'),
+             ('{\\`a}',  'à')]
+    for o, n in repls:
+        s = s.replace(o, n)
     return s
 
 def utf82e(s):
