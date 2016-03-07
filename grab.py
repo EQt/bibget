@@ -5,7 +5,7 @@ import subprocess as sp
 try:
     from urllib.request import urlopen
     def readurl(url):
-        return urlopen(unquote(url)).readall()
+        return urlopen(unquote(url)).read()
 except ImportError:
     from urllib2 import urlopen
     def readurl(url):
