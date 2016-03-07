@@ -178,6 +178,9 @@ if __name__ == "__main__":
             import doi
             arg1 = sys.argv[1].lower()
             doi.browser_open(arg1.split("doi:")[1])
+        else:
+            print("WARNING: ignoring arguments " + ",".join(sys.argv[1:)),
+                  file=sys.stderr)
             
     else:
         bibget(BIBFILE)
