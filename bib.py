@@ -1,8 +1,37 @@
 """
 Some utility functions...
 """
+def tex2utf8(s):
+    s = s.replace('{\\\"o}', 'ö')
+    s = s.replace('{\\\"a}', 'ä')
+    s = s.replace('{\\\"u}', 'ü')
+    return s
 
-import io
+def utf82e(s):
+    s = s.replace('ö', 'oe')
+    s = s.replace('ä', 'ae')
+    s = s.replace('ü', 'ue')
+    s = s.replace('ß', 'ss')
+    return s
+
+def lastname(name):
+    """Compute the last name of full name n"""
+    p = name.split(",")
+    if len(p) >= 2:
+        return p[0].strip()
+    else:
+        p = name.split(" ")
+        return p[-1].strip()
+
+
+def bibid(entry):
+    authors = entry["author"].split("and")
+    if len(authors) > 3:
+        bid = lastname(authors[0]) + "EtAl"
+    else:
+        bid = "".join(map(lastname, authors))
+    entry['ID'] = utf82e(bid + ":" + str(entry["year"]))
+
 
 def dumps(entry):
     """
