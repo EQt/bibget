@@ -18,15 +18,7 @@ def fetch_entry(url):
     biburl  = findx(xml, "//x:a[contains(text(), 'BibTeX (.BIB)')]/@href")[0]
     bibtex = readurl(biburl).decode('utf-8').replace("﻿", "")
 
-    bp = BibTexParser(bibtex)
-    entry = bp.get_entry_list()[0]
-
-    entry.pop("abstract", None)
-    entry.pop("url", None)
-    entry["pdf"] = pdfurl
-    entry["author"] = tex2utf8(entry["author"])
-    setid(entry)
-    return entry
+    return create_entry(bibtex, pdfurl)
     
 
 def bibentry(url):

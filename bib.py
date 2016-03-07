@@ -10,6 +10,16 @@ def bibparse(bibpath):
     with io.open(bibpath, 'r', encoding='utf-8') as bibfile:
         return BibTexParser(bibfile.read(), customization=convert_to_unicode)
 
+def create_entry(bibtex, pdfurl):
+    bp = BibTexParser(bibtex)
+    entry = bp.get_entry_list()[0]
+    entry.pop("abstract", None)
+    entry.pop("url", None)
+    entry["pdf"] = pdfurl
+    entry["author"] = tex2utf8(entry["author"])
+    setid(entry)
+    return entry
+
 
 def tex2utf8(s):
     repls = [('{\\\"o}', 'ö'),
