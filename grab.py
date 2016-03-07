@@ -69,6 +69,7 @@ def fetch_entry(url, doi=None):
         url = ask('BIBTEX')
         if url == 'local':
             bibtex = open('local').read()
+            if bibtex[0] == '\ufeff': bibtex = bibtex[1:]
             print(bibtex)
         else:
             bibtex = readurl(url).decode('utf-8')
