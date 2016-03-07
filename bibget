@@ -163,7 +163,7 @@ def prepend(fname, entry):
     """
     Prepend string entry if it does not exist in fname as bibtex entry
     """
-    entry_id = BibTeXParser(entry).get_entry_list()[0]['ID']
+    entry_id = BibTexParser(entry).get_entry_list()[0]['ID']
     entries = bibparse(fname).get_entry_dict()
     if entry_id in entries.keys():
         print("There already exists an bibtex entry '%s'!" % entry_id,
@@ -196,7 +196,7 @@ if __name__ == "__main__":
             import grab
             grab.retrieve(sys.argv[1])
         else:
-            print("WARNING: ignoring arguments " + ",".join(sys.argv[1:)),
+            print("WARNING: ignoring arguments " + ",".join(sys.argv[1:]),
                   file=sys.stderr)
             
     else:
