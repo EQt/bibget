@@ -12,13 +12,17 @@ def bibparse(bibpath):
 
 def create_entry(bibtex, pdfurl):
     bp = BibTexParser(bibtex)
-    entry = bp.get_entry_list()[0]
-    entry.pop("abstract", None)
-    entry.pop("url", None)
-    entry["pdf"] = pdfurl
-    entry["author"] = tex2utf8(entry["author"])
-    setid(entry)
-    return entry
+    try:
+        entry = bp.get_entry_list()[0]
+        entry.pop("abstract", None)
+        entry.pop("url", None)
+        entry["pdf"] = pdfurl
+        entry["author"] = tex2utf8(entry["author"])
+        setid(entry)
+        return entry
+    except:
+        raise RuntimeError('Error processing ' + bibtex)
+        pass
 
 
 def tex2utf8(s):
