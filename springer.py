@@ -11,8 +11,7 @@ from grab import getxml
 from bib import *
 # from bibtexparser import dumps
 
-
-def bibentry(url):
+def fetch_entry(url):
     xml = getxml(url)
 
     pdfurl  = findx(xml, "//x:meta[@name = 'citation_pdf_url']/@content")[0]
@@ -27,9 +26,11 @@ def bibentry(url):
     entry["pdf"] = pdfurl
     entry["author"] = tex2utf8(entry["author"])
     bibid(entry)
+    return entry
+    
 
-    return dumps(bp)
-
+def bibentry(url):
+    return dumps(fetch_entry(url))
 
 
 if __name__ == "__main__":
