@@ -33,6 +33,15 @@ def setid(entry):
     entry['ID'] = utf82e(bid + ":" + str(entry["year"]))
 
 
+def pdfloc(entry, pdf_dir):
+    """Return the location of the corresponding PDF file"""
+    pdfout = entry['ID'].replace(':', '_') + '.pdf'
+    out_dir = pdf_dir
+    if 'dir' in entry:
+        out_dir = out_dir + entry['dir'].replace('/', '') + '/'
+    return out_dir + pdfout
+
+
 def dumps(entry):
     """
     Format bibtex entry as string

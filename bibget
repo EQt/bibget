@@ -66,13 +66,9 @@ def bibget(bibpath=BIBFILE, pdf_dir=PDF_DIR):
     bp = bibparse(bibpath)
     for entry in bp.get_entry_list():
         try:
-            pdfout = entry['ID'].replace(':', '_') + '.pdf'
-            out_dir = pdf_dir
-            if 'dir' in entry:
-                out_dir = out_dir + entry['dir'].replace('/', '') + '/'
-            print('%-*s' % (KEYWIDTH, pdfout), end='...')
+            pdfout = pdfloc(entry, pdf_dir)
+            print('%-*s' % (KEYWIDTH, entry['ID']), end='...')
             sys.stdout.flush()
-            pdfout = out_dir + pdfout
             if os.path.exists(pdfout):
                 print('[exists]')
             else:
