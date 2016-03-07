@@ -53,10 +53,14 @@ def download(url, path, msg=sys.stderr, chunk_size=1024):
             for buf in r.iter_content(chunk_size):
                 if buf: file.write(buf)
 
+def bibparse(bibpath):
+    with io.open(bibpath, 'r', encoding='utf-8') as bibfile:
+        return BibTexParser(bibfile.read(), customization=convert_to_unicode)
+
+
 def bibget(bibpath=BIBFILE, pdf_dir=PDF_DIR):
     """Fetch missing PDFs"""
-    with io.open(bibpath, 'r', encoding='utf-8') as bibfile:
-        bp = BibTexParser(bibfile.read(), customization=convert_to_unicode)
+    bp = bibparse(bibpath)
         for entry in bp.get_entry_list():
             try:
                 pdfout = entry['ID'].replace(':', '_') + '.pdf'
