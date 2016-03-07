@@ -42,3 +42,7 @@ def getxml(url):
 def findx(xml, path):
     ns = {'x': 'http://www.w3.org/1999/xhtml'}
     return xml.xpath(path, namespaces=ns)
+
+
+def retrieve(url):
+    raise "not implemented, yet..."
