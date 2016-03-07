@@ -89,7 +89,9 @@ def find_doi(fname):
     dois = sp.check_output(['pdfgrep', '-i', 'DOI', fname]).decode('utf-8')
     DOI_REGEX = ".*doi.+(10\\.\d{4,6}/[^\"'&<% \t\n\r\f\v]+).*"
     m = re.match(DOI_REGEX, dois, flags=re.I) or error('Could not find DOI')
-    return m.group(1)
+    doi = m.group(1)
+    if doi[-1] == '.': doi = doi[0:-1]
+    return doi
     
 
 def doi2url(doi):
