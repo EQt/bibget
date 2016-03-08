@@ -32,7 +32,8 @@ def tex2utf8(s):
     repls = [('{\\\"o}', 'ö'),
              ('{\\\"a}', 'ä'),
              ('{\\\"u}', 'ü'),
-             ('{\\`a}',  'à')]
+             ('{\\`a}',  'à'),
+             (' AND ', ' and ')]
     for o, n in repls:
         s = s.replace(o, n)
     return s
