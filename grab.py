@@ -130,3 +130,18 @@ def import_pdf(fname, PDF_DIR, BIBFILE, open_browser=True):
 
 def import_bib(fname, PDF_DIR, BIBFILE):
     print(fname)
+    pdfurl = ask("PDF")
+    entry = create_entry(open(fname).read(), pdfurl)
+    while entry_exists(BIBFILE, entry):
+        last = entry['ID'][-1]
+        if not last.isalpha(): last = chr(96)
+        suff = chr(ord(last)+1)
+        entry['ID'][-1] = entry['ID'][:-1] + last
+        print("Already have ID. Renaming to %s" % entry['ID'], file=sys.stderr)
+    entrys = dumps(entry)
+    print(entrys)
+    prepend(BIBFILE, entrys)
+    answer = ask('Delete "%s"? (yN)' % fname)
+    if answer == 'y':
+        os.remove(fname)
+    
