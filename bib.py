@@ -88,7 +88,8 @@ def dumps(entry):
     indent = "\n" + " " * (width + 4)
     formatter = ",\n  %%-%ds %%s" % width
     s = "@%s{%s" % (entry["ENTRYTYPE"], entry["ID"])
-    line = lambda l: l if "\n" in l else indent.join(textwrap.wrap(l, 80 - width))
+    line = lambda l: l if "\n" in l or l.startswith("http://") \
+           else indent.join(textwrap.wrap(l, 80 - width))
     form = lambda s: formatter % (s + " = ", '{%s}' % line(entry[s]))
     entry['author'] = entry['author'].replace("\n", " ")
     entry['author'] = entry['author'].replace("and ", "and" + indent)
