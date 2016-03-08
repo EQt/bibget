@@ -1,3 +1,4 @@
+from __future__ import print_function
 from lxml import etree
 from io import BytesIO
 import subprocess as sp
@@ -25,7 +26,8 @@ except ImportError:
 try:
     from urllib.parse import urlencode, unquote, urlparse  # py3k
 except ImportError:
-    from urllib import urlencode, unquote, urlparse
+    from urllib import urlencode, unquote
+    from urllib2 import urlparse
 
 def tidy_html(html):
     """
@@ -124,3 +126,7 @@ def import_pdf(fname, PDF_DIR, BIBFILE, open_browser=True):
     except sp.CalledProcessError:
         print(os.getcwd())
         pass
+
+
+def import_bib(fname, PDF_DIR, BIBFILE):
+    print(fname)

@@ -1,6 +1,9 @@
+# -*- coding: utf-8 -*-
+# -*- mode: python; -*-
 """
 Some utility functions...
 """
+from __future__ import unicode_literals, print_function
 from bibtexparser.bparser import BibTexParser
 from bibtexparser.customization import convert_to_unicode
 import io
