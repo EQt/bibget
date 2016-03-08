@@ -131,12 +131,15 @@ def import_pdf(fname, PDF_DIR, BIBFILE, open_browser=True):
 def import_bib(fname, PDF_DIR, BIBFILE):
     print(fname)
     pdfurl = ask("PDF")
+    direct = ask("DIR")
     entry = create_entry(open(fname).read(), pdfurl)
+    entry["dir"] = direct
     while entry_exists(BIBFILE, entry):
         last = entry['ID'][-1]
-        if not last.isalpha(): last = chr(96)
-        suff = chr(ord(last)+1)
-        entry['ID'][-1] = entry['ID'][:-1] + last
+        if not last.isalpha():
+            last = chr(96)
+            entry['ID'] += "x"
+        entry['ID'] = entry['ID'][:-1] + chr(ord(last)+1)
         print("Already have ID. Renaming to %s" % entry['ID'], file=sys.stderr)
     entrys = dumps(entry)
     print(entrys)
