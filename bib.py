@@ -14,6 +14,7 @@ def bibparse(bibpath):
         return BibTexParser(bibfile.read(), customization=convert_to_unicode)
 
 def create_entry(bibtex, pdfurl):
+    bibtex = bibtex.replace("@Article", "@article")
     bp = BibTexParser(bibtex)
     try:
         entry = bp.get_entry_list()[0]
