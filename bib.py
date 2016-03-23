@@ -9,13 +9,18 @@ from bibtexparser.customization import convert_to_unicode
 import io
 
 
+def bibstring(bibs):
+    if bibs.startswith("\ufeff"):
+        bibs = bibs[1:]
+    return BibTexParser(bibs, customization=convert_to_unicode)
+
 def bibparse(bibpath):
     with io.open(bibpath, 'r', encoding='utf-8') as bibfile:
-        return BibTexParser(bibfile.read(), customization=convert_to_unicode)
+        return bibstring(bibfile.read())
 
 def create_entry(bibtex, pdfurl):
     bibtex = bibtex.replace("@Article", "@article")
-    bp = BibTexParser(bibtex)
+    bp = bibstring(bibtex)
     try:
         entry = bp.get_entry_list()[0]
         entry.pop("abstract", None)
