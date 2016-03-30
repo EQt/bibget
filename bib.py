@@ -21,10 +21,11 @@ def bibparse(bibpath):
 def create_entry(bibtex, pdfurl):
     bibtex = bibtex.replace("@Article", "@article")
     bp = bibstring(bibtex)
+    delete = ["abstract", "url"]
     try:
         entry = bp.get_entry_list()[0]
-        entry.pop("abstract", None)
-        entry.pop("url", None)
+        for d in delete:
+            entry.pop(d, None)
         entry["pdf"] = pdfurl
         entry["author"] = tex2utf8(entry["author"])
         setid(entry)
