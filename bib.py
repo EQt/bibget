@@ -64,7 +64,7 @@ def lastname(name):
 
 
 def setid(entry):
-    authors = list(map(lambda s: s.strip(), entry["author"].split("and")))
+    authors = list(map(lambda s: s.strip(), entry["author"].split(" and ")))
     if len(authors) > 3:
         bid = lastname(authors[0]) + "EtAl"
     else:
