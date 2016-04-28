@@ -173,7 +173,7 @@ if __name__ == "__main__":
             doi.browser_open(arg1.split("doi:")[1])
         elif sys.argv[1].startswith('http'):
             import grab
-            grab.retrieve(sys.argv[1])
+            grab.retrieve(sys.argv[1], main_dir + "/" + BIBFILE)
         elif sys.argv[1].lower().endswith('.pdf'):
             import grab
             grab.import_pdf(sys.argv[1], main_dir + "/" + PDF_DIR, main_dir + "/" + BIBFILE)

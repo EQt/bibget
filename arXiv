@@ -4,7 +4,7 @@ Extract a bibtex entry of an arXiv paper
 """
 
 from __future__ import print_function, with_statement
-from grab import find_arXiv_bib
+from grab import find_arXiv_bib, create_entry, dumps
 # from bibtexparser.bparser import BibTexParser
 
 
@@ -13,8 +13,9 @@ if __name__ == "__main__":
     if len(sys.argv) <= 1:
         print("Usage: %s <arXiv-url>" % sys.argv[0], file=sys.stderr)
         exit(1)
-    bib = find_arXiv_bib(sys.argv[1])
-    print(bib)
+    entry, pdfurl = find_arXiv_bib(sys.argv[1])
+    bibs = dumps(create_entry(dumps(entry), pdfurl))
+    print(bibs)
     # bp = BibTexParser(bib)
     # entry = bp.get_entry_list()[0]
 

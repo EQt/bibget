@@ -64,11 +64,11 @@ def findx(xml, path):
     return xml.xpath(path, namespaces=ns)
 
 
-def retrieve(url):
+def retrieve(url, BIBFILE):
     """
     Retrieve a bibtex entry located at url, and return it formatted
     """
-    return dumps(fetch_entry(url))
+    return dumps(fetch_entry(url, BIBFILE))
 
 
 def ask(prompt):
@@ -83,11 +83,31 @@ def error(msg):
     raise RuntimeError(msg)
 
 
-def fetch_entry(url, doi=None):
+def find_arXiv_bib(url):
+    """
+    Return bibtex entry of given arXiv url (as str)
+    """
+    m = re.match("https?\://arxiv\.org/(abs|pdf)/(.+?)(\.pdf|\.html)?$", url)
+    arXiv_url = "http://arxiv.org/abs/%s" % m.group(2)
+    xml = getxml(arXiv_url)
+    pdfurl   = findx(xml, "//x:meta[@name = 'citation_pdf_url']/@content")[0]
+    arXiv_id = findx(xml, "//x:meta[@name = 'citation_arxiv_id']/@content")[0]
+    query = urlencode({'format': 'bibtex', 'q': arXiv_id})
+    xml = getxml('https://arxiv2bibtex.org/?' + query)
+    bibs = findx(xml, '//x:textarea[contains(text(), "Author =")]/text()')[0]
+    entry = bibstring(bibs).get_entry_list()[0]
+    entry["note"] = "Preprint on\narXiv:\href{%s}{%s}" % (pdfurl, arXiv_id)
+    return entry, pdfurl
+
+
+def fetch_entry(url, BIBFILE, doi=None):
     import springer
     urlp = urlparse(url)
+    pdfurl = None
     if urlp.netloc == 'link.springer.com':
         entry = springer.fetch_entry(url)
+    elif urlp.netloc == 'arxiv.org':
+        entry, pdfurl = find_arXiv_bib(url)
     else:
         pdfurl = ask('PDF   ')
         url = ask('BIBTEX')
@@ -100,8 +120,9 @@ def fetch_entry(url, doi=None):
         entry = create_entry(bibtex, pdfurl)
     if doi is not None:
         entry['doi'] = doi
+    if pdfurl is not None:
+        import_bib(None, None, BIBFILE, pdfurl=pdfurl, entry=entry)
     return entry
-
 
 
 def find_doi(fname):
@@ -157,6 +178,8 @@ def import_bib(fname, PDF_DIR, BIBFILE, pdfurl=None, entry=None):
     direct = ask("DIR")
     if entry is None:
         entry = open(fname).read()
+    if isinstance(entry, dict):
+        entry = dumps(entry)
     entry = create_entry(entry, pdfurl)
     entry["dir"] = direct
     while entry_exists(BIBFILE, entry):
@@ -173,19 +196,3 @@ def import_bib(fname, PDF_DIR, BIBFILE, pdfurl=None, entry=None):
         answer = ask('Delete "%s"? (yN)' % fname)
         if answer == 'y':
             os.remove(fname)
-    
-
-def find_arXiv_bib(url):
-    """Return bibtex entry of given arXiv url (as str)"""
-    m = re.match("https?\://arxiv\.org/(abs|pdf)/(.+?)(\.pdf|\.html)?$", url)
-    arXiv_url = "http://arxiv.org/abs/%s" % m.group(2)
-    xml = getxml(arXiv_url)
-    pdfurl   = findx(xml, "//x:meta[@name = 'citation_pdf_url']/@content")[0]
-    arXiv_id = findx(xml, "//x:meta[@name = 'citation_arxiv_id']/@content")[0]
-    query = urlencode({'format': 'bibtex', 'q': arXiv_id})
-    xml = getxml('https://arxiv2bibtex.org/?' + query)
-    bibs = findx(xml, '//x:textarea[contains(text(), "Author =")]/text()')[0]
-    entry = bibstring(bibs).get_entry_list()[0]
-    entry["note"] = "Preprint on\narXiv:\href{%s}{%s}" % (pdfurl, arXiv_id)
-    bibs = dumps(create_entry(dumps(entry), pdfurl))
-    return bibs
