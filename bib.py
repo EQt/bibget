@@ -117,6 +117,9 @@ def dumps(entry):
 
 
 def entry_exists(fname, entry):
+    """
+    Check whether the entry exists in bibtex file fname
+    """
     if not isinstance(entry, dict):
         entry = BibTexParser(entry).get_entry_list()[0]
     entry_id = entry['ID']
