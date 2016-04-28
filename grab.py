@@ -94,6 +94,18 @@ def find_doi(fname):
     return doi
     
 
+def find_arXiv_bib(arXiv_url):
+    """Return bibtex entry of given arXiv url (as str)"""
+    xml = getxml(arXiv_url)
+    pdfurl   = findx(xml, "//x:meta[@name = 'citation_pdf_url']/@content")[0]
+    arXiv_id = findx(xml, "//x:meta[@name = 'citation_arxiv_id']/@content")[0]
+    query = urlencode({'format': 'bibtex', 'q': arXiv_id})
+    xml = getxml('https://arxiv2bibtex.org/?' + query)
+    bib = findx(xml, '//x:textarea[contains(text(), "Author =")]/text()')[0]
+    return bib
+
+
+
 def doi2url(doi):
     info = readurl("http://doi.org/api/handles/{0}".format(doi)).decode('utf-8')
     info = json.loads(info)

@@ -4,24 +4,16 @@ Extract a bibtex entry of an arXiv paper
 """
 
 from __future__ import print_function, with_statement
-from grab import *
+from grab import find_arXiv_bib
 # from bibtexparser.bparser import BibTexParser
-
-def find_bib(arXiv_url):
-    xml = getxml(arXiv_url)
-    pdfurl   = findx(xml, "//x:meta[@name = 'citation_pdf_url']/@content")[0]
-    arXiv_id = findx(xml, "//x:meta[@name = 'citation_arxiv_id']/@content")[0]
-    query = urlencode({'format': 'bibtex', 'q': arXiv_id})
-    xml = getxml('https://arxiv2bibtex.org/?' + query)
-    bib = findx(xml, '//x:textarea[contains(text(), "Author =")]/text()')[0]
-    return bib
 
 
 if __name__ == "__main__":
+    import sys
     if len(sys.argv) <= 1:
         print("Usage: %s <arXiv-url>" % sys.argv[0], file=sys.stderr)
         exit(1)
-    bib = find_bib(sys.argv[1])
+    bib = find_arXiv_bib(sys.argv[1])
     print(bib)
     # bp = BibTexParser(bib)
     # entry = bp.get_entry_list()[0]
