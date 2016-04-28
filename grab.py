@@ -149,11 +149,15 @@ def import_pdf(fname, PDF_DIR, BIBFILE, open_browser=True):
         pass
 
 
-def import_bib(fname, PDF_DIR, BIBFILE):
-    print(fname)
-    pdfurl = ask("PDF")
+def import_bib(fname, PDF_DIR, BIBFILE, pdfurl=None, entry=None):
+    if fname is not None:
+        print(fname)
+    if pdfurl is None:
+        pdfurl = ask("PDF")
     direct = ask("DIR")
-    entry = create_entry(open(fname).read(), pdfurl)
+    if entry is None:
+        entry = open(fname).read()
+    entry = create_entry(entry, pdfurl)
     entry["dir"] = direct
     while entry_exists(BIBFILE, entry):
         last = entry['ID'][-1]
@@ -165,9 +169,10 @@ def import_bib(fname, PDF_DIR, BIBFILE):
     entrys = dumps(entry)
     print(entrys)
     prepend(BIBFILE, entrys)
-    answer = ask('Delete "%s"? (yN)' % fname)
-    if answer == 'y':
-        os.remove(fname)
+    if fname is not None:
+        answer = ask('Delete "%s"? (yN)' % fname)
+        if answer == 'y':
+            os.remove(fname)
     
 
 def find_arXiv_bib(url):
@@ -180,5 +185,7 @@ def find_arXiv_bib(url):
     query = urlencode({'format': 'bibtex', 'q': arXiv_id})
     xml = getxml('https://arxiv2bibtex.org/?' + query)
     bib = findx(xml, '//x:textarea[contains(text(), "Author =")]/text()')[0]
+
+    
 
     return bib
