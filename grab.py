@@ -52,6 +52,9 @@ def tidy_html(html):
 
 
 def getxml(url):
+    """
+    Retrieve the html/xml document located at `url`, tidy it and return an XML tree
+    """
     html = readurl(url, True)
     xml = tidy_html(html)
     return etree.parse(BytesIO(xml))
@@ -62,12 +65,22 @@ def findx(xml, path):
 
 
 def retrieve(url):
+    """
+    Retrieve a bibtex entry located at url, and return it formatted
+    """
     return dumps(fetch_entry(url))
 
 
 def ask(prompt):
+    """
+    Ask the user `prompt` and return the answer
+    """
     print('%s: ' % prompt, end=''); sys.stdout.flush()
     return sys.stdin.readline().strip()
+
+
+def error(msg):
+    raise RuntimeError(msg)
 
 
 def fetch_entry(url, doi=None):
@@ -90,9 +103,6 @@ def fetch_entry(url, doi=None):
     return entry
 
 
-def error(msg):
-    raise RuntimeError(msg)
-
 
 def find_doi(fname):
     dois = sp.check_output(['pdfgrep', '-i', 'DOI', fname]).decode('utf-8')
@@ -102,20 +112,6 @@ def find_doi(fname):
     if doi[-1] == '.': doi = doi[0:-1]
     return doi
     
-
-def find_arXiv_bib(url):
-    """Return bibtex entry of given arXiv url (as str)"""
-    m = re.match("https?\://arxiv\.org/(abs|pdf)/(.+?)(\.pdf|\.html)?$", url)
-    arXiv_url = "http://arxiv.org/abs/%s" % m.group(2)
-    xml = getxml(arXiv_url)
-    pdfurl   = findx(xml, "//x:meta[@name = 'citation_pdf_url']/@content")[0]
-    arXiv_id = findx(xml, "//x:meta[@name = 'citation_arxiv_id']/@content")[0]
-    query = urlencode({'format': 'bibtex', 'q': arXiv_id})
-    xml = getxml('https://arxiv2bibtex.org/?' + query)
-    bib = findx(xml, '//x:textarea[contains(text(), "Author =")]/text()')[0]
-    return bib
-
-
 
 def doi2url(doi):
     info = readurl("http://doi.org/api/handles/{0}".format(doi)).decode('utf-8')
@@ -173,3 +169,16 @@ def import_bib(fname, PDF_DIR, BIBFILE):
     if answer == 'y':
         os.remove(fname)
     
+
+def find_arXiv_bib(url):
+    """Return bibtex entry of given arXiv url (as str)"""
+    m = re.match("https?\://arxiv\.org/(abs|pdf)/(.+?)(\.pdf|\.html)?$", url)
+    arXiv_url = "http://arxiv.org/abs/%s" % m.group(2)
+    xml = getxml(arXiv_url)
+    pdfurl   = findx(xml, "//x:meta[@name = 'citation_pdf_url']/@content")[0]
+    arXiv_id = findx(xml, "//x:meta[@name = 'citation_arxiv_id']/@content")[0]
+    query = urlencode({'format': 'bibtex', 'q': arXiv_id})
+    xml = getxml('https://arxiv2bibtex.org/?' + query)
+    bib = findx(xml, '//x:textarea[contains(text(), "Author =")]/text()')[0]
+
+    return bib
