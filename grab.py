@@ -6,7 +6,7 @@ import os
 import re
 import sys
 import json
-from bib import pdfloc, dumps, entry_exists, prepend, create_entry
+from bib import pdfloc, dumps, entry_exists, prepend, create_entry, bibstring
 import shutil
 
 try:
@@ -184,8 +184,7 @@ def find_arXiv_bib(url):
     arXiv_id = findx(xml, "//x:meta[@name = 'citation_arxiv_id']/@content")[0]
     query = urlencode({'format': 'bibtex', 'q': arXiv_id})
     xml = getxml('https://arxiv2bibtex.org/?' + query)
-    bib = findx(xml, '//x:textarea[contains(text(), "Author =")]/text()')[0]
-
-    
+    bibs = findx(xml, '//x:textarea[contains(text(), "Author =")]/text()')[0]
+    entry = bibstring(bibs).get_entry_list()[0]
 
     return bib

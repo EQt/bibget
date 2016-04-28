@@ -51,6 +51,8 @@ def utf82e(s):
     s = s.replace('ü', 'ue')
     s = s.replace('ß', 'ss')
     s = s.replace('ó', 'o')
+    s = s.replace('á', 'a')
+    s = s.replace('à', 'a')
     return s
 
 def lastname(name):
@@ -64,7 +66,9 @@ def lastname(name):
 
 
 def setid(entry):
-    authors = list(map(lambda s: s.strip(), entry["author"].split(" and ")))
+    entry["author"] = entry["author"].replace("\n", " ")
+    authors = entry["author"].split(" and ")
+    authors = list(map(lambda s: s.strip(), authors))
     if len(authors) > 3:
         bid = lastname(authors[0]) + "EtAl"
     else:
