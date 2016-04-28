@@ -186,5 +186,6 @@ def find_arXiv_bib(url):
     xml = getxml('https://arxiv2bibtex.org/?' + query)
     bibs = findx(xml, '//x:textarea[contains(text(), "Author =")]/text()')[0]
     entry = bibstring(bibs).get_entry_list()[0]
-
-    return bib
+    entry["note"] = "Preprint on\narXiv:\href{%s}{%s}" % (pdfurl, arXiv_id)
+    bibs = dumps(create_entry(dumps(entry), pdfurl))
+    return bibs
