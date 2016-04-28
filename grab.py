@@ -25,9 +25,10 @@ def readurl(url, expect_html=False):
     net = urlopen(unquote(url))
     if expect_html:
         from mimetypes import guess_extension
-        ex = guess_extension(net.info()["Content-Type"])
-        if ex not in [".htm", ".xml"]:
-            raise ValueError("Expted HTML, not %s" % ex)
+        ctype = net.info()["Content-Type"].split(";")[0]
+        ex = guess_extension(ctype)
+        if ex not in [".htm", ".xml", ".html"]:
+            raise ValueError("Expted HTML (not %s, ie %s) for '%s'" % (ex, ctype, url))
     return net.read()
 
 
@@ -102,8 +103,10 @@ def find_doi(fname):
     return doi
     
 
-def find_arXiv_bib(arXiv_url):
+def find_arXiv_bib(url):
     """Return bibtex entry of given arXiv url (as str)"""
+    m = re.match("https?\://arxiv\.org/(abs|pdf)/(.+?)(\.pdf|\.html)?$", url)
+    arXiv_url = "http://arxiv.org/abs/%s" % m.group(2)
     xml = getxml(arXiv_url)
     pdfurl   = findx(xml, "//x:meta[@name = 'citation_pdf_url']/@content")[0]
     arXiv_id = findx(xml, "//x:meta[@name = 'citation_arxiv_id']/@content")[0]
