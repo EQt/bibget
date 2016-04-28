@@ -11,23 +11,31 @@ import shutil
 
 try:
     from urllib.request import urlopen
-    def readurl(url):
-        return urlopen(unquote(url)).read()
 except ImportError:
     from urllib2 import urlopen
-    def readurl(url):
-        return urlopen(unquote(url)).read()
+try:
+    from urllib.parse import urlencode, unquote, urlparse  # py3k
+except ImportError:
+    from urllib import urlencode, unquote
+    from urllib2 import urlparse
+
+
+
+def readurl(url, expect_html=False):
+    net = urlopen(unquote(url))
+    if expect_html:
+        from mimetypes import guess_extension
+        ex = guess_extension(net.info()["Content-Type"])
+        if ex not in [".htm", ".xml"]:
+            raise ValueError("Expted HTML, not %s" % ex)
+    return net.read()
+
 
 try:
     from subprocess import DEVNULL  # py3k
 except ImportError:
     import os
     DEVNULL = open(os.devnull, 'wb')
-try:
-    from urllib.parse import urlencode, unquote, urlparse  # py3k
-except ImportError:
-    from urllib import urlencode, unquote
-    from urllib2 import urlparse
 
 def tidy_html(html):
     """
@@ -43,7 +51,7 @@ def tidy_html(html):
 
 
 def getxml(url):
-    html = readurl(url)
+    html = readurl(url, True)
     xml = tidy_html(html)
     return etree.parse(BytesIO(xml))
 
