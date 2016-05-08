@@ -53,6 +53,7 @@ def utf82e(s):
     s = s.replace('ó', 'o')
     s = s.replace('á', 'a')
     s = s.replace('à', 'a')
+    s = s.replace('é', 'e')
     return s
 
 def lastname(name):
