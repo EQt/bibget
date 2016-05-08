@@ -56,7 +56,7 @@ def download(url, path, msg=sys.stderr, chunk_size=1024):
                 if buf: file.write(buf)
 
 
-def bibget(bibpath=BIBFILE, pdf_dir=PDF_DIR):
+def bibget(bibpath=BIBFILE, pdf_dir=PDF_DIR, show=False):
     """Fetch missing PDFs"""
     bp = bibparse(bibpath)
     for entry in bp.get_entry_list():
@@ -82,6 +82,7 @@ def bibget(bibpath=BIBFILE, pdf_dir=PDF_DIR):
                 if url != None:
                     print('[download]')
                     download(url, pdfout)
+                    if show: os.system("xdg-open %s" % pdfout)
         except KeyError as e:
             print("entry.keys = %s" % str(entry.keys()))
             raise
@@ -186,4 +187,6 @@ if __name__ == "__main__":
 
     else:
         os.chdir(main_dir)
-        bibget(BIBFILE)
+        # show = True if len(sys.argv) == 2 and sys.argv[1] == "-v" else False
+        show = True
+        bibget(BIBFILE, show=show)
