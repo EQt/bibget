@@ -87,7 +87,7 @@ def bibget(bibpath=BIBFILE, pdf_dir=PDF_DIR, show=False):
             print("entry.keys = %s" % str(entry.keys()))
             raise
 
-def git_commit(pdf_dir=PDF_DIR):
+def git_commit(pdf_dir=PDF_DIR, bibpath=BIBFILE):
     """Commit last PDFs"""
     old_dir = os.getcwd()
     os.chdir(pdf_dir)
@@ -97,10 +97,12 @@ def git_commit(pdf_dir=PDF_DIR):
             os.system("git add %s" % line[1])
     pdfs = [l.split()[1] for l in os.popen("git st -s").readlines()
             if l.split()[0] == 'A' ]
+    if len(pdfs) == 0:
+        pdfs = [os.popen('git log --format="%s"').readlines()[0]]
     pdfs = "\n".join(pdfs)
     os.system("git ci -am '%s'" % pdfs)
     os.chdir(old_dir)
-    os.system("git ci bibliography.bib %s -m '%s'" % (PDF_DIR, pdfs))
+    os.system("git ci %s %s -m '%s'" % (bibpath, pdf_dir, pdfs))
     os.chdir(pdf_dir)
     os.system("git push")
 
