@@ -109,7 +109,6 @@ def git_commit(pdf_dir=PDF_DIR, bibpath=BIBFILE):
 def bib_mv_dir(old, new, bibpath=BIBFILE):
     """Rename dir of bibitem given by key in bibpath"""
     key = re.search('([^/]+)\.pdf$', old).group(1).replace('_', ':')
-    exit(1)
     old = re.sub('\./(.+)/.+', '\\1', old)
     new = re.sub('\./(.+)/?', '\\1', new).replace('/', '')
     print("replacing dir in %s from '%s' to '%s' " % (key, old, new))
