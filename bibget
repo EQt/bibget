@@ -50,7 +50,7 @@ def download(url, path, msg=sys.stderr, chunk_size=1024):
         print("", file=msg)
     except ImportError:
         import requests
-        r = requests.get(url)
+        r = requests.get(url, verify=False)
         with open(path, 'wb') as file:
             for buf in r.iter_content(chunk_size):
                 if buf: file.write(buf)
