@@ -18,7 +18,7 @@ def bibparse(bibpath):
     with io.open(bibpath, 'r', encoding='utf-8') as bibfile:
         return bibstring(bibfile.read())
 
-def create_entry(bibtex, pdfurl):
+def create_entry(bibtex, pdfurl=None):
     bibtex = bibtex.replace("@Article", "@article")
     bp = bibstring(bibtex)
     delete = ["abstract", "url", "keyword", "keywords", "link"]
@@ -26,7 +26,8 @@ def create_entry(bibtex, pdfurl):
         entry = bp.get_entry_list()[0]
         for d in delete:
             entry.pop(d, None)
-        entry["pdf"] = pdfurl
+        if pdfurl is not None:
+            entry["pdf"] = pdfurl
         entry["author"] = tex2utf8(entry["author"])
         setid(entry)
         return entry
