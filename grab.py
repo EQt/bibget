@@ -173,14 +173,18 @@ def import_pdf(fname, PDF_DIR, BIBFILE, open_browser=True):
 def import_bib(fname, PDF_DIR, BIBFILE, pdfurl=None, entry=None):
     if fname is not None:
         print(fname)
-    if pdfurl is None:
-        pdfurl = ask("PDF")
-    direct = ask("DIR")
     if entry is None:
         entry = open(fname).read()
     if isinstance(entry, dict):
         entry = dumps(entry)
+    # print(entry)
     entry = create_entry(entry, pdfurl)
+    if 'pdf' not in entry:
+        if pdfurl is None:
+            entry["pdf"] = ask("PDF")
+        else:
+            entry["pdf"] = pdfurl
+    direct = ask("DIR")
     entry["dir"] = direct
     while entry_exists(BIBFILE, entry):
         last = entry['ID'][-1]
