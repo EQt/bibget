@@ -21,7 +21,17 @@ def bibparse(bibpath):
 def create_entry(bibtex, pdfurl=None):
     bibtex = bibtex.replace("@Article", "@article")
     bp = bibstring(bibtex)
-    delete = ["abstract", "url", "keyword", "keywords", "link"]
+    delete = ["abstract",
+              "url",
+              "keyword",
+              "keywords",
+              "link",
+              "added-at",
+              "intrahash",
+              "asin",
+              "timestamp",
+              "description",
+              "biburl"]
     try:
         entry = bp.get_entry_list()[0]
         for d in delete:
