@@ -29,6 +29,7 @@ def create_entry(bibtex, pdfurl=None):
         if pdfurl is not None:
             entry["pdf"] = pdfurl
         entry["author"] = tex2utf8(entry["author"])
+        if "year" not in entry: return entry
         setid(entry)
         return entry
     except:

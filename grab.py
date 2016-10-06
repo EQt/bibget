@@ -6,7 +6,7 @@ import os
 import re
 import sys
 import json
-from bib import pdfloc, dumps, entry_exists, prepend, create_entry, bibstring
+from bib import pdfloc, dumps, entry_exists, prepend, create_entry, bibstring, setid
 import shutil
 
 try:
@@ -179,6 +179,9 @@ def import_bib(fname, PDF_DIR, BIBFILE, pdfurl=None, entry=None):
         entry = dumps(entry)
     # print(entry)
     entry = create_entry(entry, pdfurl)
+    if 'year' not in entry:
+        entry["year"] = ask("Year")
+        setid(entry)
     if 'pdf' not in entry:
         if pdfurl is None:
             entry["pdf"] = ask("PDF")
