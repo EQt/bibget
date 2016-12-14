@@ -7,8 +7,6 @@ Script that parses our bibtex file and downloads the corresponding pdfs
 """
 
 from __future__ import print_function, with_statement, unicode_literals
-from bibtexparser.bparser import BibTexParser
-from bibtexparser.customization import convert_to_unicode
 import os
 import sys
 import re
