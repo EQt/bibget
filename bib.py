@@ -29,6 +29,7 @@ def create_entry(bibtex, pdfurl=None):
               "added-at",
               "intrahash",
               "asin",
+              "bibsource",
               "timestamp",
               "description",
               "biburl"]
