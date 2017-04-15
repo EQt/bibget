@@ -33,10 +33,15 @@ def create_entry(bibtex, pdfurl=None):
               "timestamp",
               "description",
               "biburl"]
+    rename = {"crossref": "crossref_"}
     try:
         entry = bp.get_entry_list()[0]
         for d in delete:
             entry.pop(d, None)
+        for o,n in rename.items():
+            v = entry.pop(o, None)
+            if v is not None:
+                entry[n] = v
         if pdfurl is not None:
             entry["pdf"] = pdfurl
         entry["author"] = tex2utf8(entry["author"])
