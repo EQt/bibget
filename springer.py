@@ -14,11 +14,9 @@ from bib import *
 
 def fetch_entry(url):
     xml = getxml(url)
-
-    pdfurl = findx(xml, "//x:meta[@name = 'citation_pdf_url']/@content")[0]
-    biburl = findx(xml, "//x:a[contains(text(), 'BibTeX (.BIB)')]/@href")[0]
+    pdfurl = find1(xml, "//x:meta[@name = 'citation_pdf_url']/@content")
+    biburl = find1(xml, "//x:a[contains(text(), 'BibTeX (.BIB)')]/@href")
     bibtex = readurl(biburl).decode('utf-8').replace("﻿", "")
-
     return create_entry(bibtex, pdfurl)
 
 
