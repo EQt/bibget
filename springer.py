@@ -2,8 +2,6 @@
 """
 Find citation for a website https://link.springer.com/*
 """
-
-from __future__ import print_function, with_statement
 import sys
 import argparse
 import re
