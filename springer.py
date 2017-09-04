@@ -7,8 +7,8 @@ from __future__ import print_function, with_statement
 import sys
 from grab import *
 from bibtexparser.bparser import BibTexParser
-from grab import getxml
-from bib import *
+from grab import getxml, find1, readurl
+from bib import create_entry
 # from bibtexparser import dumps
 
 
