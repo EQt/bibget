@@ -9,8 +9,7 @@ import argparse
 from grab import *
 from bibtexparser.bparser import BibTexParser
 from grab import getxml, find1, readurl
-from bib import create_entry
-# from bibtexparser import dumps
+from bib import create_entry, dumps
 
 
 def fetch_entry(url):
