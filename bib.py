@@ -14,9 +14,11 @@ def bibstring(bibs):
         bibs = bibs[1:]
     return BibTexParser(bibs, customization=convert_to_unicode)
 
+
 def bibparse(bibpath):
     with io.open(bibpath, 'r', encoding='utf-8') as bibfile:
         return bibstring(bibfile.read())
+
 
 def create_entry(bibtex, pdfurl=None):
     bibtex = bibtex.replace("@Article", "@article")
@@ -39,14 +41,15 @@ def create_entry(bibtex, pdfurl=None):
         entry = bp.get_entry_list()[0]
         for d in delete:
             entry.pop(d, None)
-        for o,n in rename.items():
+        for o, n in rename.items():
             v = entry.pop(o, None)
             if v is not None:
                 entry[n] = v
         if pdfurl is not None:
             entry["pdf"] = pdfurl
         entry["author"] = tex2utf8(entry["author"])
-        if "year" not in entry: return entry
+        if "year" not in entry:
+            return entry
         setid(entry)
         return entry
     except:
@@ -64,6 +67,7 @@ def tex2utf8(s):
         s = s.replace(o, n)
     return s
 
+
 def utf82e(s):
     s = s.replace('ö', 'oe')
     s = s.replace('ä', 'ae')
@@ -74,6 +78,7 @@ def utf82e(s):
     s = s.replace('à', 'a')
     s = s.replace('é', 'e')
     return s
+
 
 def lastname(name):
     """Compute the last name of full name n"""
@@ -113,20 +118,29 @@ def dumps(entry):
 
     if not isinstance(entry, dict):
         return dumps(entry.get_entry_list()[0])
-    islow = lambda s: s[0].islower()
+
+    def islow(s):
+        return s[0].islower()
+
     labels = list(filter(islow, entry.keys()))
     width = 3 + max(map(len, labels))
     indent = "\n" + " " * (width + 4)
     formatter = ",\n  %%-%ds %%s" % width
     s = "@%s{%s" % (entry["ENTRYTYPE"], entry["ID"])
+
     def line(l):
-        if l.startswith("http://"): return l
+        if l.startswith("http://"):
+            return l
         if "\n" in l:
-            if indent in l: return l
+            if indent in l:
+                return l
             else:
                 return l.replace("\n", indent)
         return indent.join(textwrap.wrap(l, 80 - width))
-    form = lambda s: formatter % (s + " = ", '{%s}' % line(entry[s]))
+
+    def form(s):
+        return formatter % (s + " = ", '{%s}' % line(entry[s]))
+
     entry['author'] = entry['author'].replace("\n", " ")
     entry['author'] = entry['author'].replace("and ", "and" + indent)
     s = s + form('title') + form('author')
