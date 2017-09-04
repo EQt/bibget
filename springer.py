@@ -6,14 +6,19 @@ Find citation for a website https://link.springer.com/*
 from __future__ import print_function, with_statement
 import sys
 import argparse
-from grab import getxml, find1, readurl
+import re
+from grab import readurl
 from bib import create_entry, dumps
 
 
 def fetch_entry(url):
-    xml = getxml(url)
-    pdfurl = find1(xml, "//x:meta[@name = 'citation_pdf_url']/@content")
-    biburl = find1(xml, "//x:a[contains(text(), 'BibTeX (.BIB)')]/@href")
+    m = re.match('http.*article/(\d.+)', url)
+    assert m is not None
+    pref = m.group(1)
+    pdfurl = 'https://link.springer.com/content/pdf/{}.pdf'.\
+             format(pref.replace('/', '%2F'))
+    biburl = 'https://citation-needed.springer.com/v2/references/' + \
+             pref + '?format=bibtex&flavour=citation'
     bibtex = readurl(biburl).decode('utf-8').replace("﻿", "")
     return create_entry(bibtex, pdfurl)
 
