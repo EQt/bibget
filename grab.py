@@ -64,8 +64,16 @@ def getxml(url):
 
 
 def findx(xml, path):
+    """Search xpath in xml (prepend namespace 'x')"""
     ns = {'x': 'http://www.w3.org/1999/xhtml'}
     return xml.xpath(path, namespaces=ns)
+
+
+def find1(xml, path):
+    """Like `findx` but return unique element (assert that)"""
+    findings = findx(xml, path)
+    assert len(findings) == 1, "Found %d" % len(findings)
+    return findings[0]
 
 
 def retrieve(url, BIBFILE):
