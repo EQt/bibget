@@ -11,14 +11,16 @@ from grab import getxml
 from bib import *
 # from bibtexparser import dumps
 
+
 def fetch_entry(url):
     xml = getxml(url)
 
-    pdfurl  = findx(xml, "//x:meta[@name = 'citation_pdf_url']/@content")[0]
-    biburl  = findx(xml, "//x:a[contains(text(), 'BibTeX (.BIB)')]/@href")[0]
+    pdfurl = findx(xml, "//x:meta[@name = 'citation_pdf_url']/@content")[0]
+    biburl = findx(xml, "//x:a[contains(text(), 'BibTeX (.BIB)')]/@href")[0]
     bibtex = readurl(biburl).decode('utf-8').replace("﻿", "")
 
     return create_entry(bibtex, pdfurl)
+
 
 def fetch_acs(url):
     import requests
@@ -27,12 +29,12 @@ def fetch_acs(url):
     action = 'http://pubs.acs.org/action/downloadCitation'
     # POST DATA
     data = {
-        'direct' : 'true',
-        'doi' :  doi,
-        'downloadFileName' : 'achs_ancham84_2622',
-        'format' : 'bibtex',
-        'include' : 'cit',
-        'submit' : 'Download+Citation(s)'
+        'direct': 'true',
+        'doi': doi,
+        'downloadFileName': 'achs_ancham84_2622',
+        'format': 'bibtex',
+        'include': 'cit',
+        'submit': 'Download+Citation(s)'
     }
 
 
