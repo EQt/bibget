@@ -6,7 +6,8 @@ import os
 import re
 import sys
 import json
-from bib import pdfloc, dumps, entry_exists, prepend, create_entry, bibstring, setid
+from bib import pdfloc, dumps, entry_exists, prepend, create_entry, \
+    bibstring, setid
 import shutil
 
 try:
@@ -20,7 +21,6 @@ except ImportError:
     from urllib2 import urlparse
 
 
-
 def readurl(url, expect_html=False):
     net = urlopen(unquote(url))
     if expect_html:
@@ -28,7 +28,8 @@ def readurl(url, expect_html=False):
         ctype = net.info()["Content-Type"].split(";")[0]
         ex = guess_extension(ctype)
         if ex not in [".htm", ".xml", ".html"]:
-            raise ValueError("Expted HTML (not %s, ie %s) for '%s'" % (ex, ctype, url))
+            raise ValueError("Expted HTML (not {}, ie {}) for '{}'".
+                             format(ex, ctype, url))
     return net.read()
 
 
@@ -37,6 +38,7 @@ try:
 except ImportError:
     import os
     DEVNULL = open(os.devnull, 'wb')
+
 
 def tidy_html(html):
     """
@@ -53,11 +55,13 @@ def tidy_html(html):
 
 def getxml(url):
     """
-    Retrieve the html/xml document located at `url`, tidy it and return an XML tree
+    Retrieve the html/xml document located at `url`,
+    tidy it and return an XML tree
     """
     html = readurl(url, True)
     xml = tidy_html(html)
     return etree.parse(BytesIO(xml))
+
 
 def findx(xml, path):
     ns = {'x': 'http://www.w3.org/1999/xhtml'}
@@ -75,7 +79,8 @@ def ask(prompt):
     """
     Ask the user `prompt` and return the answer
     """
-    print('%s: ' % prompt, end=''); sys.stdout.flush()
+    print('%s: ' % prompt, end='')
+    sys.stdout.flush()
     return sys.stdin.readline().strip()
 
 
@@ -90,7 +95,7 @@ def find_arXiv_bib(url):
     m = re.match("https?\://arxiv\.org/(abs|pdf)/(.+?)(\.pdf|\.html)?$", url)
     arXiv_url = "http://arxiv.org/abs/%s" % m.group(2)
     xml = getxml(arXiv_url)
-    pdfurl   = findx(xml, "//x:meta[@name = 'citation_pdf_url']/@content")[0]
+    pdfurl = findx(xml, "//x:meta[@name = 'citation_pdf_url']/@content")[0]
     arXiv_id = findx(xml, "//x:meta[@name = 'citation_arxiv_id']/@content")[0]
     query = urlencode({'format': 'bibtex', 'q': arXiv_id})
     xml = getxml('https://arxiv2bibtex.org/?' + query)
@@ -113,7 +118,8 @@ def fetch_entry(url, BIBFILE, doi=None):
         url = ask('BIBTEX')
         if url == 'local':
             bibtex = open('local').read()
-            if bibtex[0] == '\ufeff': bibtex = bibtex[1:]
+            if bibtex[0] == '\ufeff':
+                bibtex = bibtex[1:]
             print(bibtex)
         else:
             bibtex = readurl(url).decode('utf-8')
@@ -130,12 +136,14 @@ def find_doi(fname):
     DOI_REGEX = ".*doi.+(10\\.\d{4,6}/[^\"'&<% \t\n\r\f\v]+).*"
     m = re.match(DOI_REGEX, dois, flags=re.I) or error('Could not find DOI')
     doi = m.group(1)
-    if doi[-1] == '.': doi = doi[0:-1]
+    if doi[-1] == '.':
+        doi = doi[0:-1]
     return doi
-    
+
 
 def doi2url(doi):
-    info = readurl("http://doi.org/api/handles/{0}".format(doi)).decode('utf-8')
+    info = readurl("http://doi.org/api/handles/{0}".
+                   format(doi)).decode('utf-8')
     info = json.loads(info)
     return info['values'][0]['data']['value']
 
