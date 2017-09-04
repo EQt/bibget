@@ -23,18 +23,20 @@ from bib import *
 def download(url, path, msg=sys.stderr, chunk_size=1024):
     """Download url to path (similar to curl or wget)."""
     dirname = os.path.dirname(path)
-    if not os.path.exists(dirname): os.mkdir(dirname)
+    if not os.path.exists(dirname):
+        os.mkdir(dirname)
     print("wget -O %s '%s'" % (path, url), file=msg)
     try:
         import pycurl
+
         def progress(total, finished, ut, ud):
             width = 60
             d = int(width*finished / float(total+1))
             dots = "." * d + " " * (width - d)
-            line = dots + "% 4.1f %%  " % (100* finished / float(total+1))
+            line = dots + "% 4.1f %%  " % (100*finished / float(total+1))
             msg.write(line + "\r")
 
-        c =  pycurl.Curl()
+        c = pycurl.Curl()
         with open(path, 'wb') as output:
             c.setopt(c.URL, url)
             c.setopt(c.NOPROGRESS, 0)
@@ -51,7 +53,8 @@ def download(url, path, msg=sys.stderr, chunk_size=1024):
         r = requests.get(url, verify=False)
         with open(path, 'wb') as file:
             for buf in r.iter_content(chunk_size):
-                if buf: file.write(buf)
+                if buf:
+                    file.write(buf)
 
 
 def bibget(bibpath=BIBFILE, pdf_dir=PDF_DIR, show=False):
@@ -77,13 +80,15 @@ def bibget(bibpath=BIBFILE, pdf_dir=PDF_DIR, show=False):
                 else:
                     print('[NO URL]')
 
-                if url != None:
+                if url is not None:
                     print('[download]')
                     download(url, pdfout)
-                    if show: os.system("xdg-open %s" % pdfout)
+                    if show:
+                        os.system("xdg-open %s" % pdfout)
         except KeyError as e:
             print("entry.keys = %s" % str(entry.keys()))
             raise
+
 
 def git_commit(pdf_dir=PDF_DIR, bibpath=BIBFILE):
     """Commit last PDFs"""
@@ -94,7 +99,7 @@ def git_commit(pdf_dir=PDF_DIR, bibpath=BIBFILE):
         if line[0] == '??':
             os.system("git add %s" % line[1])
     pdfs = [l.split()[1] for l in os.popen("git st -s").readlines()
-            if l.split()[0] == 'A' ]
+            if l.split()[0] == 'A']
     if len(pdfs) == 0:
         pdfs = [os.popen('git log --format="%s"').readlines()[0]]
     pdfs = "\n".join(pdfs)
@@ -103,6 +108,7 @@ def git_commit(pdf_dir=PDF_DIR, bibpath=BIBFILE):
     os.system("git ci %s %s -m '%s'" % (bibpath, pdf_dir, pdfs))
     os.chdir(pdf_dir)
     os.system("git push")
+
 
 def bib_mv_dir(old, new, bibpath=BIBFILE):
     """Rename dir of bibitem given by key in bibpath"""
@@ -113,20 +119,27 @@ def bib_mv_dir(old, new, bibpath=BIBFILE):
     with io.open(bibpath, 'r', encoding='utf-8') as bibfile:
         bib = bibfile.read()
         new = re.sub('./(.+)/?', '\1', new)
+
         def repl(m):
             if m.group(2) != old:
-                raise RuntimeError('found dir "%s" is not what was expected "%s"' % (m.group(2)[:200], old))
+                raise RuntimeError('found dir "{}"; expected "{}"'.
+                                   format(m.group(2)[:200], old))
             return m.group(1) + "{" + new + "}"
 
         bib, n = re.subn('(@.+?\{' + key + ',.+?dir\s+?=\s+?)\{(.+?)\}',
-                         repl, bib, count=1, flags=re.M|re.DOTALL)
-        if n < 1: raise RuntimeError('key "%s" not found' % key)
+                         repl, bib, count=1, flags=re.M | re.DOTALL)
+        if n < 1:
+            raise RuntimeError('key "%s" not found' % key)
     with io.open(bibpath, 'w', encoding='utf-8') as bibfile:
         bibfile.write(bib)
 
+
 def move(old, new, pdf_dir=PDF_DIR):
     """Move paper from to directory 'to'"""
-    strip = lambda s: re.sub('.*%s' % PDF_DIR, './', s)
+
+    def strip(s):
+        return re.sub('.*%s' % PDF_DIR, './', s)
+
     old, new = strip(old), strip(new)
     try:
         old_dir = os.getcwd()
@@ -143,7 +156,8 @@ def move(old, new, pdf_dir=PDF_DIR):
         os.chdir(old_dir)
 
     bib_mv_dir(old, new)
-    os.system("git ci bibliography.bib %s -m 'Renamed literatur dir'" % PDF_DIR)
+    os.system("git ci bibliography.bib {} -m 'Renamed literatur dir'".
+              format(PDF_DIR))
 
     try:
         os.chdir(pdf_dir)
@@ -155,14 +169,17 @@ def move(old, new, pdf_dir=PDF_DIR):
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         if sys.argv[1] == 'ci':
-            if len(main_dir) > 0: os.chdir(main_dir)
+            if len(main_dir) > 0:
+                os.chdir(main_dir)
             git_commit()
         elif sys.argv[1] == 'mv':
-            if len(main_dir) > 0: os.chdir(main_dir)
+            if len(main_dir) > 0:
+                os.chdir(main_dir)
             if len(sys.argv) == 4:
                 move(old=sys.argv[2], new=sys.argv[3])
             else:
-                print("Wrong number of arguments for moving directory", file=sys.stderr)
+                print("Wrong number of arguments for moving directory",
+                      file=sys.stderr)
         elif sys.argv[1] == 'springer':
             from springer import bibentry
             entry = bibentry(sys.argv[2])
@@ -176,10 +193,12 @@ if __name__ == "__main__":
             grab.retrieve(sys.argv[1], main_dir + "/" + BIBFILE)
         elif sys.argv[1].lower().endswith('.pdf'):
             import grab
-            grab.import_pdf(sys.argv[1], main_dir + "/" + PDF_DIR, main_dir + "/" + BIBFILE)
+            grab.import_pdf(sys.argv[1], main_dir + "/" + PDF_DIR, main_dir +
+                            "/" + BIBFILE)
         elif os.path.isfile(sys.argv[1]):
             import grab
-            grab.import_bib(sys.argv[1], main_dir + "/" + PDF_DIR, main_dir + "/" + BIBFILE)
+            grab.import_bib(sys.argv[1], main_dir + "/" + PDF_DIR, main_dir +
+                            "/" + BIBFILE)
         else:
             print("WARNING: ignoring arguments " + ",".join(sys.argv[1:]),
                   file=sys.stderr)
