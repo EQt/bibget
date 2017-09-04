@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 """
-Extract a bibtex entry of an arXiv paper
+Find citation for a website https://link.springer.com/*
 """
 
 from __future__ import print_function, with_statement
 import sys
+import argparse
 from grab import *
 from bibtexparser.bparser import BibTexParser
 from grab import getxml, find1, readurl
@@ -25,8 +26,8 @@ def bibentry(url):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) <= 1:
-        print("Usage: %s <spring-url>" % sys.argv[0], file=sys.stderr)
-        exit(1)
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument('url', type=str, help='URL to the abstract')
+    args = p.parse_args()
 
-    print(bibentry(sys.argv[1]))
+    print(bibentry(args.url))
