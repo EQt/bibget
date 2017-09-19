@@ -87,6 +87,7 @@ def retrieve(url, BIBFILE):
     """
     Retrieve a bibtex entry located at url, and return it formatted
     """
+    # if re.match("https?://scholar.google.+"):
     return dumps(fetch_entry(url, BIBFILE))
 
 
