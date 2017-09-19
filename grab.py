@@ -48,9 +48,16 @@ def tidy_html(html):
     opts = {"stdout": sp.PIPE,
             "stderr": DEVNULL,
             "stdin": sp.PIPE}
-    proc = sp.Popen("tidy --force-output 1 -asxhtml -utf8 -q".split(), **opts)
-    out, err = proc.communicate(input=html)
-    return out.replace(b"&nbsp;", b" ")
+    try:
+        proc = sp.Popen("tidy --force-output 1 -asxhtml -utf8 -q".split(), **opts)
+        out, err = proc.communicate(input=html)
+        return out.replace(b"&nbsp;", b" ")
+    except FileNotFoundError as e:
+        if str(e).endswith("No such file or directory: 'tidy'"):
+            print("ERRROR: Please install `tidy`.")
+            exit(3)
+        else:
+            raise
 
 
 def getxml(url):
