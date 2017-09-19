@@ -62,6 +62,7 @@ def tex2utf8(s):
              ('{\\\"a}', 'ä'),
              ('{\\\"u}', 'ü'),
              ('{\\`a}',  'à'),
+             ('{č}',     'č'),
              (' AND ', ' and ')]
     for o, n in repls:
         s = s.replace(o, n)
@@ -69,6 +70,7 @@ def tex2utf8(s):
 
 
 def utf82e(s):
+    s = s.replace('č', 'c')
     s = s.replace('ö', 'oe')
     s = s.replace('ä', 'ae')
     s = s.replace('ü', 'ue')
