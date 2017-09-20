@@ -70,6 +70,8 @@ def tex2utf8(s):
 
 
 def utf82e(s):
+    s = s.replace('š', 's')
+    s = s.replace('ý', 'y')
     s = s.replace('č', 'c')
     s = s.replace('ö', 'oe')
     s = s.replace('ä', 'ae')
