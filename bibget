@@ -71,6 +71,9 @@ def bibget(bibpath=BIBFILE, pdf_dir=PDF_DIR, show=False):
                 url = None
                 if 'pdf' in entry:
                     url = entry['pdf']
+                    url = url.replace(' ', '')
+                    url = url.replace('\n', '')
+                    url = url.replace('\t', '')
                 elif 'link' in entry and entry['link'].endswith('.pdf'):
                     url = entry['link']
                 elif '_pdf' in entry:
