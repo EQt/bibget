@@ -83,7 +83,8 @@ def utf82e(s):
     s = s.replace('à', 'a')
     s = s.replace('é', 'e')
     repls = [('Á', 'A'),
-             ('ć', 'c')]
+             ('ć', 'c'),
+             ('í', 'i')]
     for o, n in repls:
         s = s.replace(o, n)
 
