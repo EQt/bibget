@@ -8,6 +8,7 @@ import sys
 import json
 from bib import pdfloc, dumps, entry_exists, prepend, create_entry, \
     bibstring, setid
+from prompt import ask
 import shutil
 
 try:
@@ -89,15 +90,6 @@ def retrieve(url, BIBFILE):
     """
     # if re.match("https?://scholar.google.+"):
     return dumps(fetch_entry(url, BIBFILE))
-
-
-def ask(prompt):
-    """
-    Ask the user `prompt` and return the answer
-    """
-    print('%s: ' % prompt, end='')
-    sys.stdout.flush()
-    return sys.stdin.readline().strip()
 
 
 def error(msg):

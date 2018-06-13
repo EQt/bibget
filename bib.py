@@ -4,6 +4,7 @@ Some utility functions...
 from __future__ import unicode_literals, print_function
 from bibtexparser.bparser import BibTexParser
 from bibtexparser.customization import convert_to_unicode
+from prompt import ask
 import io
 
 
@@ -70,6 +71,15 @@ def tex2utf8(s):
     return s
 
 
+def ask_unicode(s):
+    for i, c in enumerate(s):
+        try:
+            c.encode('ascii')
+        except UnicodeEncodeError:
+            s = s.replace(c, ask(f'Enter ASCII {c}: '))
+    return s
+
+
 def utf82e(s):
     s = s.replace('š', 's')
     s = s.replace('ý', 'y')
@@ -83,12 +93,11 @@ def utf82e(s):
     s = s.replace('à', 'a')
     s = s.replace('é', 'e')
     repls = [('Á', 'A'),
-             ('ć', 'c'),
-             ('í', 'i')]
+             ('ć', 'c')]
     for o, n in repls:
         s = s.replace(o, n)
 
-    return s
+    return ask_unicode(s)
 
 
 def lastname(name):
