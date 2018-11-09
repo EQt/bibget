@@ -1,3 +1,5 @@
+* TODO Compare to ~bibtools~
+  https://github.com/pkgw/bibtools/tree/master/bibtools
 * TODO Handlers
   I could implement some Handler class, depending on a regular expression of the URL.
   This way, some websites could be filtered out.
