@@ -2,13 +2,14 @@
 Some utility functions...
 """
 from __future__ import unicode_literals, print_function
-from bibtexparser.bparser import BibTexParser
-from bibtexparser.customization import convert_to_unicode
 from prompt import ask
 import io
 
 
 def bibstring(bibs):
+    from bibtexparser.bparser import BibTexParser
+    from bibtexparser.customization import convert_to_unicode
+
     if bibs.startswith("\ufeff"):
         bibs = bibs[1:]
     return BibTexParser(bibs, customization=convert_to_unicode)
@@ -174,6 +175,8 @@ def entry_exists(fname, entry):
     """
     Check whether the entry exists in bibtex file fname
     """
+    from bibtexparser.bparser import BibTexParser
+
     if not isinstance(entry, dict):
         entry = BibTexParser(entry).get_entry_list()[0]
     entry_id = entry['ID']
@@ -185,8 +188,10 @@ def prepend(fname, entry):
     """
     Prepend string entry if it does not exist in fname as bibtex entry
     """
+    import sys
+
     if entry_exists(fname, entry):
-        print("There already exists an bibtex entry '%s'!" % entry_id,
+        print("There already exists an bibtex entry '%s'!" % entry,
               file=sys.stderr)
         return
     bibf = open(fname).read()
