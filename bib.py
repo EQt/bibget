@@ -7,11 +7,15 @@ import io
 
 
 def bibstring(bibs):
+    from bibtexparser import __version__
+    from distutils.version import LooseVersion
     from bibtexparser.bparser import BibTexParser
     from bibtexparser.customization import convert_to_unicode
 
     if bibs.startswith("\ufeff"):
         bibs = bibs[1:]
+    if LooseVersion(__version__) >= LooseVersion("1.0.0"):
+        return BibTexParser(bibs, common_strings=True)
     return BibTexParser(bibs, customization=convert_to_unicode)
 
 
