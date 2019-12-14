@@ -170,11 +170,22 @@ def move(old, new, pdf_dir=PDF_DIR):
         os.chdir(old_dir)
 
 
-if __name__ == "__main__":
+def parse_args():
+    """
+    https://kite.com/python/docs/argparse.ArgumentParser.add_subparsers
+    """
     import argparse
 
-    
+    p = argparse.ArgumentParser(description=__doc__)
+    b = p.add_subparsers(dest='st')
+    m = b.add_parser("mv")
+    m.add_argument("src", type=str)
+    m.add_argument("dst", type=str)
+    p.set_defaults(cmd='st')
+    args = p.parse_args()
 
+
+if __name__ == "__main__":
     if len(sys.argv) > 1:
         if sys.argv[1] == 'ci':
             if len(main_dir) > 0:
