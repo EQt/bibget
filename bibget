@@ -2,19 +2,23 @@
 """
 Manage bibtex file: download missing PDFs, move, commit, etc.
 """
-
 from __future__ import print_function, with_statement, unicode_literals
 import os
 import sys
 import re
 import io       # as suggested by http://stackoverflow.com/a/25050323
+from bib import bibparse, pdfloc, prepend
+
+
+BIBFILE  = '../bibliography.bib'
+PDF_DIR  = '../literatur/'
+KEYWIDTH = 50
+main_dir = os.path.dirname(__file__)
 
 # Load config variables
 exec(open(os.path.join(os.path.dirname(__file__), '.bibrc.py')).read())
 bibgetdir = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(0, bibgetdir)
-
-from bib import *
 
 
 def download(url, path, msg=sys.stderr, chunk_size=1024):
@@ -86,7 +90,7 @@ def bibget(bibpath=BIBFILE, pdf_dir=PDF_DIR, show=False):
                     if show:
                         os.system("xdg-open %s" % pdfout)
         except KeyError as e:
-            print("entry.keys = %s" % str(entry.keys()))
+            print(e, "entry.keys = %s" % str(entry.keys()))
             raise
 
 
