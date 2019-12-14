@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 # -*- mode: python; -*-
 """
-Script that parses our bibtex file and downloads the corresponding pdfs
-(if they are not available on disk).
+Manage bibtex file: download missing PDFs, move, commit, etc.
 """
 
 from __future__ import print_function, with_statement, unicode_literals
@@ -170,6 +169,10 @@ def move(old, new, pdf_dir=PDF_DIR):
 
 
 if __name__ == "__main__":
+    import argparse
+
+    
+
     if len(sys.argv) > 1:
         if sys.argv[1] == 'ci':
             if len(main_dir) > 0:
