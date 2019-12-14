@@ -131,7 +131,7 @@ def pdfloc(entry, pdf_dir):
     pdfout = entry['ID'].replace(':', '_') + '.pdf'
     out_dir = pdf_dir
     if 'dir' in entry:
-        out_dir = out_dir + entry['dir'].replace('/', '') + '/'
+        out_dir = out_dir + entry['dir'] + '/'
     return out_dir + pdfout
 
 
