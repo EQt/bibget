@@ -60,7 +60,11 @@ def download(url, path, msg=sys.stderr, chunk_size=1024):
 
 def bibget(bibpath=BIBFILE, pdf_dir=PDF_DIR, show=False):
     """Fetch missing PDFs"""
-    bp = bibparse(bibpath)
+    try:
+        bp = bibparse(bibpath)
+    except:
+        print(bibpath)
+        raise
     for entry in bp.get_entry_list():
         try:
             pdfout = pdfloc(entry, pdf_dir)
