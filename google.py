@@ -15,6 +15,7 @@ if __name__ == "__main__":
     title = args.title
     query = scholarly.search_pubs(title)
     pub = next(query)
+    print(f"# pdf = {pub['eprint_url']}")
     pub['pdf'] = pub['eprint_url']
     bib = pub['bib']
     bib['year'] = bib['pub_year']
