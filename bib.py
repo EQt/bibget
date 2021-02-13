@@ -154,7 +154,7 @@ def dumps(entry):
     s = "@%s{%s" % (entry["ENTRYTYPE"], entry["ID"])
 
     def line(l):
-        if l.startswith("http://"):
+        if l.startswith("http://") or l.startswith("https://"):
             return l
         if "\n" in l:
             if indent in l:
