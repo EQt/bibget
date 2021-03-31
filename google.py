@@ -21,4 +21,8 @@ if __name__ == "__main__":
     bib = pub['bib']
     bib['year'] = bib['pub_year']
     del bib['pub_year']
-    print(scholarly.bibtex(pub))
+    out = scholarly.bibtex(pub)
+    print(out)
+    with open("bibentry.bib", "w") as io:
+        print(out, file=io)
+        
